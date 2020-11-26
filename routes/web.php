@@ -5,28 +5,33 @@ $router->get('/', function () use ($router) {
     echo "Home";
 });
 
+//Router http://e-warehouse/setup/
+// $router->group(['prefix' => 'reset']), function() use ($router) {
+//     $router->put('reset', 'SetupController@Reset');
+// }
+
 // Router http://e-warehouse/entrance/
 $router->group(['prefix' => 'entrance'], function() use ($router) {
-    $router->put('pallet/update/{pallet_id}', 'EntranceController@PallletUpdate');
-    $router->put('bag/update/{pallet_id}', 'EntranceController@BagUpdate');
+    $router->put('update', 'EntranceController@Update');
 });
 
 // Router http://e-warehouse/storage/store
 $router->group(['prefix' => 'storage/store'], function() use ($router) {
-    $router->get('', 'StorageStoreController@GetDisplay');
-    $router->put('update', 'StorageStoreController@PalletUpdate');
+    $router->get('{pallet_id}', 'StorageStoreController@GetDisplay');
+    $router->put('movingtostorage/update', 'StorageStoreController@MovingToStorageUpdate');
+    $router->put('onstorage/update', 'StorageStoreController@OnStorageUpdate');
 });
 
 // Router http://e-warehouse/storage/pickup
 $router->group(['prefix' => 'storage/pickup'], function() use ($router) {
-    $router->get('', 'StoragePickupController@GetDisplay');
+    $router->get('{type_id}/{bag_amount}', 'StoragePickupController@GetDisplay');
     $router->put('update', 'StoragePickupController@PalletUpdate');
 });
 
 // Router http://e-warehouse/loading/
 $router->group(['prefix' => 'loading'], function() use ($router) {
-    $router->put('pallet/update', 'LoadingController@PalletUpdate');
-    $router->put('bag/update', 'LoadingController@BagUpdate');
+    $router->put('palletready/update', 'LoadingController@PalletReadyUpdate');
+    $router->put('onloading/update', 'LoadingController@OnLoadingUpdate');
 });
 
 ////////////////////////////// TEST //////////////////////////////
