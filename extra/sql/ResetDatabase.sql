@@ -1,0 +1,20 @@
+DROP PROCEDURE IF EXISTS ResetDatabase;
+
+DELIMITER $$
+CREATE PROCEDURE ResetDatabase()
+BEGIN
+	-- Penghapusan Semua Data
+	DELETE FROM `Rows`;
+	ALTER TABLE `Rows` AUTO_INCREMENT = 1;
+
+	DELETE FROM `Pallets`;
+	ALTER TABLE `Pallets` AUTO_INCREMENT = 1;
+
+	DELETE FROM `Bags`;
+	ALTER TABLE `Bags` AUTO_INCREMENT = 1;
+
+	DELETE FROM `Devices`;
+	ALTER TABLE `Devices` AUTO_INCREMENT = 1;
+END $$
+
+DELIMITER ;

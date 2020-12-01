@@ -8,7 +8,7 @@ class TypeController extends Controller {
     public function index() {
         $types = DB::select(DB::raw("SELECT * FROM Types ORDER BY id"));
 
-        if ($type != null) {
+        if ($types != null) {
             foreach ($types as $type) {
                 echo "id = " . $type->id . ", type_name = " . $type->type_name . "<br>";
             }
