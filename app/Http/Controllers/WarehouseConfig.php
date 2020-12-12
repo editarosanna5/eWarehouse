@@ -14,7 +14,7 @@ class WarehouseConfig {
     public static $BagsPerPallet = 49;
 
     public static $TimeGrouping = 3;        // dalam hari
-    public static $DaysToExpiration = 28;   // dalam hari
+    public static $DaysToExpiration = 6;   // dalam hari
 
     public static function PalletsPerRow() {
         return WarehouseConfig::$StacksPerColumn * WarehouseConfig::$ColumnsPerRow;

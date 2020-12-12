@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request as Request;
 
 class EntranceController extends Controller {
+
     public function Update(Request $request){
         $new_pallet_id = $request->new_pallet_id;
         $old_pallet_id = $request->old_pallet_id;

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="author" content="Ronoto">
+		<meta name="description" content="e-warehouse loading page">
+		
+		<link rel="shortcut icon" href="client/components/favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" href="client/css/Loading.css">
+		
+		<title>Loading | e-warehouse</title>
+
+		<script>
+			function openWin() {
+				window.open("https://www.google.com", "_self");
+			}
+		</script>
+	</head>
+	<body>
+		<div id="nav">
+			<ul>
+				<li><a href="http://e-warehouse">HOME</a></li>
+				<li><a href="#">SETTINGS</a></li>
+			</ul>
+		</div>
+
+		<h1>Loading</h1>
+		<form class="form">
+			<h3>ORDER INFORMATION</h3>
+			<p>TEST</p>
+			<p>
+				<label for="poNumber">DO NUMBER</label>
+				<span><input name="doNumber" id="doNumber" type="text"></span>
+			</p>
+			<p>
+				<label for="productType">PRODUCT TYPE</label>
+				<span><input name="productType" id="productType" type="text"></span>  
+			</p>
+			<p>
+				<label for="numberOfBags">NUMBER OF BAGS</label>
+				<span><input name="numberOfBags" id="numberOfBags" type="text"></span>
+			</p>
+			<button onclick="openWin()">SUBMIT</button>
+		</form>
+	</body>
+</html>
