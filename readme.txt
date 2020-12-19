@@ -7,7 +7,7 @@ Setup database:
 	command: source create.sql
 
 	a.	jika error, edit path di line 161-167 pada create.sql agar sesuai
-	b.	sebelum rerun script create.sql, run script delete sql
+	b.	sebelum rerun script create.sql, run script delete.sql
 		command: source delete.sql
 	c.	rerun script create.sql
 		command: source create.sql
