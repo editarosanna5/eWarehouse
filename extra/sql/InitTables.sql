@@ -30,6 +30,7 @@ BEGIN
 
 	-- Daftar Kelompok Perangkat
 	INSERT INTO `DeviceGroups` (group_name) VALUES ('PACKAGING_ZONE');
+	INSERT INTO `DeviceGroups` (group_name) VALUES ('PRINTER');
 	INSERT INTO `DeviceGroups` (group_name) VALUES ('FORKLIFT_STORING');
 	INSERT INTO `DeviceGroups` (group_name) VALUES ('FORKLIFT_PICKING');
 	INSERT INTO `DeviceGroups` (group_name) VALUES ('LOADING_ZONE');

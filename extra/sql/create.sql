@@ -85,19 +85,83 @@ CREATE TABLE `DeviceGroups` (                       -- posisi client (sensor)
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Devices` (                            -- client (sensor)
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER NOT NULL,
     group_id INTEGER NOT NULL,
-
+    
+    CONSTRAINT PRIMARY KEY (id, group_id),
     CONSTRAINT FOREIGN KEY (group_id)
         REFERENCES `DeviceGroups` (id)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
-SOURCE D:/Kuliah/TA 1/System/Database/Design/sql/new/InitDatabase.sql;
-SOURCE D:/Kuliah/TA 1/System/Database/Design/sql/new/InitTables.sql;
-SOURCE D:/Kuliah/TA 1/System/Database/Design/sql/new/InsertRow.sql;
-SOURCE D:/Kuliah/TA 1/System/Database/Design/sql/new/InsertDevice.sql;
-SOURCE D:/Kuliah/TA 1/System/Database/Design/sql/new/InsertPallet.sql;
-SOURCE D:/Kuliah/TA 1/System/Database/Design/sql/new/InsertBags.sql;
-SOURCE D:/Kuliah/TA 1/System/Database/Design/sql/new/ResetDatabase.sql;
-SOURCE D:/Kuliah/TA 1/System/Database/Design/sql/new/setup.sql;
+CREATE TABLE `StorageOptions` (
+    device_number INTEGER NOT NULL,
+    row_id INTEGER NOT NULL,
+    pallet_id INTEGER NOT NULL,
+
+    INDEX USING BTREE(device_number),
+    INDEX USING BTREE(row_id),
+    INDEX USING BTREE(pallet_id),
+    
+    CONSTRAINT PRIMARY KEY (device_number,row_id),
+    CONSTRAINT FOREIGN KEY (device_number)
+        REFERENCES `Devices` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (row_id)
+        REFERENCES `Rows` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (pallet_id)
+        REFERENCES `Pallets` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE `PickupOptions` (
+    device_number INTEGER NOT NULL,
+    pallet_id INTEGER NOT NULL,
+
+    INDEX USING BTREE(device_number),
+    INDEX USING BTREE(pallet_id),
+
+    CONSTRAINT PRIMARY KEY (device_number,pallet_id),
+    CONSTRAINT FOREIGN KEY (device_number)
+        REFERENCES `Devices` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (pallet_id)
+        REFERENCES `Pallets` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE `PickupStatus` (
+    device_number INTEGER NOT NULL,
+    required_pallet_count INTEGER NOT NULL,
+
+    INDEX USING BTREE(device_number),
+    INDEX USING BTREE(required_pallet_count),
+
+    CONSTRAINT PRIMARY KEY (device_number),
+    CONSTRAINT FOREIGN KEY (device_number)
+        REFERENCES `Devices` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE `LoadingStatus` (
+    device_number INTEGER NOT NULL,
+    required_bag_count INTEGER NOT NULL,
+
+    INDEX USING BTREE(device_number),
+    INDEX USING BTREE(required_bag_count),
+
+    CONSTRAINT PRIMARY KEY (device_number),
+    CONSTRAINT FOREIGN KEY (device_number)
+        REFERENCES `Devices` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+
+) ENGINE = InnoDB;
+
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InitDatabase.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InitTables.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertRow.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertDevice.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertPallet.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/ResetDatabase.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/setup.sql;

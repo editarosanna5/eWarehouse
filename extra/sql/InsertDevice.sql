@@ -1,7 +1,7 @@
 DROP PROCEDURE IF EXISTS InsertDevices;
 
 DELIMITER $$
-CREATE PROCEDURE InsertDevices(PackagingZone INT, ForkliftStoring INT, ForkliftPicking INT, LoadingZone INT)
+CREATE PROCEDURE InsertDevices(PackagingZone INT, Printer INT, ForkliftStoring INT, ForkliftPicking INT, LoadingZone INT)
 BEGIN
 	DECLARE i INT;
 
@@ -13,7 +13,19 @@ BEGIN
 			LEAVE PackagingZone_insert;
 		END IF;
 
-		INSERT INTO `Devices` (group_id) VALUES (1);
+		INSERT INTO `Devices` (id, group_id) VALUES (i, 1);
+		SET i = i + 1;
+	END LOOP;
+
+	-- Menambah Device Packing Zone Sebanyak Printer
+	SET i = 1;
+
+	Printer_insert: LOOP
+		IF i > Printer THEN
+			LEAVE Printer_insert;
+		END IF;
+
+		INSERT INTO `Devices` (id, group_id) VALUES (i, 2);
 		SET i = i + 1;
 	END LOOP;
 
@@ -25,7 +37,7 @@ BEGIN
 			LEAVE ForkliftStoring_insert;
 		END IF;
 
-		INSERT INTO `Devices` (group_id) VALUES (2);
+		INSERT INTO `Devices` (id, group_id) VALUES (i, 3);
 		SET i = i + 1;
 	END LOOP;
 
@@ -37,7 +49,7 @@ BEGIN
 			LEAVE ForkliftPicking_insert;
 		END IF;
 
-		INSERT INTO `Devices` (group_id) VALUES (3);
+		INSERT INTO `Devices` (id, group_id) VALUES (i, 4);
 		SET i = i + 1;
 	END LOOP;
 
@@ -49,7 +61,7 @@ BEGIN
 			LEAVE LoadingZone_insert;
 		END IF;
 
-		INSERT INTO `Devices` (group_id) VALUES (4);
+		INSERT INTO `Devices` (id, group_id) VALUES (i, 5);
 		SET i = i + 1;
 	END LOOP;
 END $$

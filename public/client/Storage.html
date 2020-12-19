@@ -14,17 +14,20 @@
 		<div id="nav">
 			<ul>
 				<li><a href="http://e-warehouse">HOME</a></li>
-				<li><a href="#">SETTINGS</a></li>
 			</ul>
 		</div>
 
 		<h1>Storage</h1>
 
-		<form class="form">
+		<form class="form" action="http://e-warehouse/storage/map" method="GET">
 			<h3>PALLET INFORMATION</h3>
 			<p>
-				<label for="palletId">Pallet ID</label>
-				<span><input name="palletId" id="palletId" type="text"></span>
+				<label for="pallet_id">Pallet ID</label>
+				<span><input name="pallet_id" id="pallet_id" placeholder="Example: P-0000000001" type="text"></span>
+			</p>
+			<p>
+				<label for="device_id">Device ID</label>
+				<span><input name="device_id" id="device_id" placeholder="Example: DEV-03-001" type="text"></span>
 			</p>
 			<button>SUBMIT</button>
 		</form>

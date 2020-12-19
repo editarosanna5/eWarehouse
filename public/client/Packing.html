@@ -14,25 +14,28 @@
 		<div id="nav">
 			<ul>
 				<li><a href="http://e-warehouse">HOME</a></li>
-				<li><a href="#">SETTINGS</a></li>
 			</ul>
 		</div>
 
 		<h1>Packing</h1>
 
-		<form class="form">
+		<form class="form" action="http://e-warehouse/packing/create" method="GET">
 			<h3>PRODUCTION INFORMATION</h3>
 			<p>
-				<label for="poNumber">PO NUMBER</label>
-				<span><input name="poNumber" id="poNumber" type="text"></span>
+				<label for="po_number">PO NUMBER</label>
+				<span><input name="po_number" id="po_number" placeholder="Example: PO-01-20201201-0000000001" type="text"></span>
 			</p>
 			<p>
-				<label for="productType">PRODUCT TYPE</label>
-				<span><input name="productType" id="productType" type="text"></span>  
+				<label for="type_id">PRODUCT TYPE</label>
+				<span><input name="type_id" id="type_id" placeholder="Example: 1" type="text"></span>  
 			</p>
 			<p>
-				<label for="productionTime">PRODUCTION TIME</label>
-				<span><input name="productionTime" id="productType" type="text"></span>
+				<label for="production_timestamp">PRODUCTION TIME</label>
+				<span><input name="production_timestamp" id="production_timestamp" placeholder="Example: 2020-12-01 23:59:59" type="text"></span>
+			</p>
+			<p>
+				<label for="device_id">DEVICE ID</label>
+				<span><input name="device_id" id="device_id" placeholder="Example: DEV-02-001" type="text"></span>
 			</p>
 			<button>SUBMIT</button>
 		</form>
