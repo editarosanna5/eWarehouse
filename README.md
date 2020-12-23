@@ -33,6 +33,7 @@ Semua tahapan dibawah ini hanya berlaku jika belum pernah install sama sekali. J
 3. [Setup URL](#setup-url)
 4. [Akses App](#akses-app)
 5. [Route List](#route-list)
+6. [Contoh Program Penggunaan di ESP32 (Arduino IDE)](#contoh-program-esp32)
 
 ## Install Program
 1. Install [XAMPP](https://www.apachefriends.org/index.html) 
@@ -53,7 +54,7 @@ Semua tahapan dibawah ini hanya berlaku jika belum pernah install sama sekali. J
 
 ## Setup URL
 *tidak wajib dijalankan, hanya untuk mempermudah saja*
-
+*tapi jadi tidak bisa mengakses phpMyAdmin*
 1.	Modifikasi* file C:\Windows\System32\drivers\etc\hosts
 	- Tambahkan `127.0.0.1 e-warehouse` pada file hosts
 	- modifikasi harus dilakukan dengan text editor yang dirun sebagai admin
@@ -69,12 +70,15 @@ Semua tahapan dibawah ini hanya berlaku jika belum pernah install sama sekali. J
 
 ## Akses app
 1.	Run server dan mysql (jalankan XAMPP)
-2.	Buka http://e-warehouse pada browser (jika menjalankan tahap [Setup URL](#setupurl))
-3. Jika tidak, buka http://localhost/ewarehouse/public/ 
-4. Jika ingin membuka dari device lain, buka http://ipaddress-laptop/ewarehouse/public/
+2.	Buka http://e-warehouse pada browser 
+3.  Jika ingin membuka dari device lain, buka http://ipaddress-laptop
 
 ## Route list:
-*http://e-warehouse dapat diganti dengan http://localhost/ewarehouse/public/ atau http://ipaddress-laptop/ewarehouse/public/*
+> **Deskripsi yang bagus juga dapat dilihat pada Dokumen B300**
+
+*Parameter API disini masih cukup tidak lengkap, Dokumentasi perlu dibagusin lebih jauh lagi*
+
+*http://e-warehouse dapat diganti dengan http://ipaddress-laptop*
 
 1.	http://e-warehouse
 	-	deskripsi &rightarrow; home page
@@ -172,3 +176,43 @@ Semua tahapan dibawah ini hanya berlaku jika belum pernah install sama sekali. J
 		- device_id
 		: format &rightarrow; DEV-05-00X (X: 1-2)
 		: deskripsi &rightarrow; id scanner pada loading zone line X.
+
+## Contoh Program ESP32
+```
+#include "WiFi.h"
+#include "HTTPClient.h"
+ 
+const char* ssid = "ssid";
+const char* password =  "pass";
+ 
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password); 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi..");
+  }
+  Serial.println("Connected to the WiFi network");
+}
+ 
+void loop() {
+ if(WiFi.status()== WL_CONNECTED){
+   HTTPClient http;   
+   http.begin("http://192.168.1.109/entrance/update");
+   http.addHeader("Content-Type", "application/json");  
+   int httpResponseCode = http.PUT("{\"new_pallet_id\" : \"P-0000000003\",\"device_id\" : \"DEV-01-001\"}");   
+   if(httpResponseCode>0){
+    String response = http.getString();   
+    Serial.println(httpResponseCode);
+    Serial.println(response);          
+   }else{
+    Serial.print("Error on sending PUT Request: ");
+    Serial.println(httpResponseCode);
+   }
+   http.end();
+ }else{
+    Serial.println("Error in WiFi connection");
+ }
+  delay(10000);
+}
+```
