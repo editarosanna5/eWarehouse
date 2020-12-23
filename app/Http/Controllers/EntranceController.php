@@ -132,10 +132,10 @@ class EntranceController extends Controller {
                                 id = $old_pallet_id
                         "));
                         
-                        $new_pallet_id_qr = "P" . str_pad($new_pallet_id, 10, "0", STR_PAD_LEFT);
+                        $new_pallet_id_qr = "P-" . str_pad($new_pallet_id, 10, "0", STR_PAD_LEFT);
                         echo "Pallet {$new_pallet_id_qr} updated.";                                
                     } else {
-                        $new_pallet_id_qr = "P" . str_pad($new_pallet_id, 10, "0", STR_PAD_LEFT);
+                        $new_pallet_id_qr = "P-" . str_pad($new_pallet_id, 10, "0", STR_PAD_LEFT);
                         echo "Pallet {$new_pallet_id_qr} is currently unavailable for this task.";
                     }
                 } else {

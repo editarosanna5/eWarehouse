@@ -246,6 +246,7 @@ class StorageStoreController extends Controller {
                                     row_id = $row_id
                             "));
                         }
+                        echo "Pallet P-" . str_pad($pallet_id, 10, "0", STR_PAD_LEFT) . " stored in ROW-" . str_pad($row_id, 4, "0", STR_PAD_LEFT) . ".<br>";
                     } else {
                         echo "Row is not available for the current pallet.";
                     }

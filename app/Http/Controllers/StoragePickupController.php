@@ -67,6 +67,7 @@ class StoragePickupController extends Controller {
                             WHERE
                                 type_id = $type_id
                                 AND oldest_bag_timestamp > date_sub(now(), interval $DaysToExpiration day)
+                                AND status_id = 5
                             ORDER BY
                                 oldest_bag_timestamp ASC,
                                 row_number ASC,
