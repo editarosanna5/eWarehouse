@@ -20,13 +20,6 @@ CREATE TABLE `PalletStatus` (                       -- status palet
     INDEX USING BTREE(pallet_status)
 ) ENGINE = InnoDB;
 
-CREATE TABLE `BagStatus` (                          -- status karung
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    bag_status VARCHAR(255) NOT NULL UNIQUE,
-
-    INDEX USING BTREE(bag_status)
-) ENGINE = InnoDB;
-
 CREATE TABLE `Rows` (                               -- line penyimpanan
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     pallet_count INTEGER NOT NULL
@@ -34,17 +27,18 @@ CREATE TABLE `Rows` (                               -- line penyimpanan
 
 CREATE TABLE `Pallets` (                            -- palet
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    po_number INTEGER NOT NULL UNIQUE,
     type_id INTEGER,
     status_id INTEGER DEFAULT 2 NOT NULL,
     bag_count INTEGER DEFAULT 0 NOT NULL,
     row_number INTEGER,
     column_number INTEGER,
     stack_number INTEGER,
-    oldest_bag_timestamp DATETIME NULL DEFAULT NULL,
+    production_date DATE DEFAULT NULL,
 
     INDEX USING BTREE(row_number),
     INDEX USING BTREE(row_number, column_number, stack_number),
-    INDEX USING BTREE(oldest_bag_timestamp),
+    INDEX USING BTREE(production_date),
 
     CONSTRAINT FOREIGN KEY (type_id)
         REFERENCES `Types` (id)
@@ -57,40 +51,34 @@ CREATE TABLE `Pallets` (                            -- palet
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
-CREATE TABLE `Bags` (                               -- karung
+CREATE TABLE `Groups` (                       -- posisi client (sensor)
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    type_id INTEGER NOT NULL,
-    pallet_id INTEGER,
-    status_id INTEGER DEFAULT 1,
-    po_number VARCHAR(255) NOT NULL UNIQUE,
-    production_timestamp DATETIME NOT NULL,
+    group VARCHAR(255) NOT NULL UNIQUE
+) ENGINE = InnoDB;
 
-    INDEX USING BTREE(po_number),
-    INDEX USING BTREE(production_timestamp),
-
-    CONSTRAINT FOREIGN KEY (type_id)
-        REFERENCES `Types` (id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT FOREIGN KEY (pallet_id)
-        REFERENCES `Pallets` (id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT FOREIGN KEY (status_id)
-        REFERENCES `BagStatus` (id)
+CREATE TABLE `GroupMembers` (                            -- client (sensor)
+    group_id INTEGER NOT NULL,
+    member_id INTEGER NOT NULL,
+    
+    CONSTRAINT PRIMARY KEY (group_id, member_id),
+    CONSTRAINT FOREIGN KEY (group_id)
+        REFERENCES `Groups` (id)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
-CREATE TABLE `DeviceGroups` (                       -- posisi client (sensor)
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    group_name VARCHAR(255) NOT NULL UNIQUE
-) ENGINE = InnoDB;
+CREATE TABLE `ProductionData` (
+    group_id INTEGER DEFAULT 2 NOT NULL,
+    member_id INTEGER PRIMARY KEY,
+    po_number INTEGER NOT NULL UNIQUE,
+    type_id INTEGER NOT NULL,
+    bag_count INTEGER NOT NULL,
+    production_date DATE NOT NULL,
 
-CREATE TABLE `Devices` (                            -- client (sensor)
-    id INTEGER NOT NULL,
-    group_id INTEGER NOT NULL,
-    
-    CONSTRAINT PRIMARY KEY (id, group_id),
     CONSTRAINT FOREIGN KEY (group_id)
-        REFERENCES `DeviceGroups` (id)
+        REFERENCES `GroupMembers` (group_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (member_id)
+        REFERENCES `GroupMembers` (member_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 

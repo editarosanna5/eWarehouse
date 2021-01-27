@@ -9,7 +9,7 @@ class WarehouseConfig {
     public static $NumberOfPickingForklift = 1;
     
     public static $NumberOfRows = 20;
-    public static $ColumnsPerRow = 7;
+    public static $ColumnsPerRow = 8;
     public static $StacksPerColumn = 3;
     public static $BagsPerPallet = 49;
 
