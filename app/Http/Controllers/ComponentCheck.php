@@ -27,8 +27,8 @@ class ComponentCheck {
             return -1;
     }
 
-    public static function LineStoringID ($line_id) {
-        $temp = explode("-", $line_id);
+    public static function RowID ($row_id) {
+        $temp = explode("-", $row_id);
         
         if ($temp[0] == "L") {
             if (preg_match('/[0-9]{4}/', $temp[1]))

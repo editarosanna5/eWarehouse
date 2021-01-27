@@ -83,16 +83,16 @@ CREATE TABLE `ProductionData` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `StorageOptions` (
-    device_number INTEGER NOT NULL,
+    member_id INTEGER NOT NULL,
     row_id INTEGER NOT NULL,
     pallet_id INTEGER NOT NULL,
 
-    INDEX USING BTREE(device_number),
+    INDEX USING BTREE(member_id),
     INDEX USING BTREE(row_id),
     INDEX USING BTREE(pallet_id),
     
-    CONSTRAINT PRIMARY KEY (device_number,row_id),
-    CONSTRAINT FOREIGN KEY (device_number)
+    CONSTRAINT PRIMARY KEY (member_id,row_id),
+    CONSTRAINT FOREIGN KEY (member_id)
         REFERENCES `Devices` (id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FOREIGN KEY (row_id)

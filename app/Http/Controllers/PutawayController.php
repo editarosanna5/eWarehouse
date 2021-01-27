@@ -186,6 +186,18 @@ class PutawayController extends Controller {
 
                 if (count($final_options) != 0) {
                     foreach($final_options as $final_option) {
+                        DB::insert(DB::raw(
+                            "INSERT INTO StorageOptions (
+                                member_id,
+                                row_id,
+                                pallet_id
+                            ) VALUES (
+                                $member_id,
+                                $final_option,
+                                $pallet_id_int
+                            )
+                        "));
+
                         echo "Row {$final_option}<br>";
                     }
         
@@ -198,7 +210,7 @@ class PutawayController extends Controller {
                             if = $pallet_id_int
                     "));
                 } else {
-                    echo "No available rows.";
+                    echo "No available rows.<br>";
                 }
             } else {
                 echo "Pallet {$pallet_id} invalid or unavailable for put away.<br>";
@@ -208,7 +220,59 @@ class PutawayController extends Controller {
         }
     }
 
-    public function PutawayArrivalUpdate () {
-        
+    public function PutawayArrivalUpdate ($device_id, $row_id) {
+        // verifikasi device id
+        $member_id = ComponentCheck::DeviceID($device_id, 2);
+
+        if ($member_id != -1) {
+            // verifikasi row id
+            $row_id_int = ComponentCheck::RowID($row_id);
+
+            if ($row_id_int != -1) {
+                $temp = DB::select(DB::raw(
+                    "SELECT COUNT(*)
+                    FROM StorageOptions
+                    WHERE
+                        row_id = $row_id_int
+                "));
+
+                if ($temp != null) {
+                    $row_data = DB::select(DB::raw(
+                        "SELECT pallet_count
+                        FROM `Rows`
+                        WHERE
+                            id = $row_id_int
+                    "));
+
+                    // data row baru
+                    $pallet_count = $row_data[0]->pallet_count + 1;
+                    
+                    // data pallet baru
+                    $status_id = 4; // update status palet menjadi ON_STORAGE (4)
+                    $column_number = $pallet_count / WarehouseConfig::$StacksPerColumn;
+                    $stack_number = $pallet_count % WarehouseConfig::$StacksPerColumn;
+
+                    DB::update(DB::raw(
+                        "UPDATE `Rows`
+                        SET
+                            pallet_count = $pallet_count
+                    "));
+                    
+                    DB::update(DB::raw(
+                        "UPDATE Pallets
+                        SET
+                            -- update status palet menjadi ON_STORAGE (4)
+                            status_id = 4,
+                            row_number = $row_id_int,
+                            column_number = $column_number,
+                            stack_number = $stack_number
+                    "));
+                }
+            } else {
+                echo "Invalid row ID.<br>";
+            }
+        } else {
+            echo "Unauthorized device.<br>";
+        }
     }
 }
