@@ -1,0 +1,70 @@
+[ e-warehouse/login ]
+
+
+[ e-warehouse/receiving/form ]
+	method: get
+		- form input:
+			- PO number
+			- jenis pakan
+			- jumlah karung
+            - tanggal produksi
+			- nomor line packing
+    method: put
+		- simpan ke database (sementara)
+
+[ e-warehouse/storing ]
+	method: put
+		- update data ke tabel palet
+		- status palet = waiting_to_be_stored
+	method: get
+		- fetch daftar waiting_to_be_stored
+
+[ e-warehouse/putaway/moving ]
+	method: put
+		- scan id palet
+		- update status palet = moving_to_storage_zone
+	method: get
+		- fetch data opsi penyimpanan
+		- simpan data opsi penyimpanan ke database (sementara)
+		- rules:
+			- prioritas 1:
+				- jenis dan waktu sama dengan semua isi line
+		>> AUTORELOAD <<
+
+[ e-warehouse/putaway/arrival ]
+	method: put
+		- update status palet = on_storage
+
+[ e-warehouse/picking/form ]
+	method: get
+		- form input:
+			- DO number
+			- jenis pakan
+			- jumlah pakan
+            - nomor line loading
+    method: put
+		- simpan ke database (sementara)
+
+[ e-warehouse/picking ]
+	method: get
+		- fetch daftar order
+		>> AUTORELOAD <<
+
+[ e-warehouse/picking/:order_id ]
+	method: get
+		- fetch info {order_id}
+
+[ e-warehouse/picking/moving ]
+	method: put
+		- scan id palet
+		- update status palet = moving_to_loading_zone
+		- update data pengambilan
+
+[ e-warehouse/picking/arrival ]
+	method: put
+		- update status palet = ready_loading_zone
+
+[ e-warehouse/picking/loading ]
+	method: put
+		- update status palet (jika belum) = loading
+		- update jumlah karung palet
