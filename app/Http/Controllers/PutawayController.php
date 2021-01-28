@@ -7,7 +7,7 @@ use Illuminate\Http\Request as Request;
 class PutawayController extends Controller {
     // mengambil semua opsi penyimpanan
     // menyimpan opsi penyimpanan ke database
-    public function PutawayMovingFetch ($pallet_id_int) {
+    public function PutawayMovingFetch ($member_id, $pallet_id_int) {
         // import nilai max pallet per row
         $pallets_per_row = WarehouseConfig::PalletsPerRow();
 
@@ -170,6 +170,28 @@ class PutawayController extends Controller {
             $final_options = $option_set_1;
         }
 
+        if (count($final_options) != 0) {
+            DB::delete(DB::raw(
+                "DELETE FROM StorageOptions
+                WHERE
+                    member_id = $member_id
+            "));
+
+            foreach ($final_options as $final_option) {
+                DB::insert(DB::raw(
+                    "INSERT INTO StorageOptions (
+                        member_id,
+                        row_id,
+                        pallet_id
+                    ) VALUES (
+                        $member_id,
+                        $final_option,
+                        $pallet_id_int
+                    )
+                "));
+            }
+        }
+
         return $final_options;
     }
 
@@ -182,25 +204,9 @@ class PutawayController extends Controller {
             $pallet_id_int = ComponentCheck::PalletID($pallet_id, 2);
 
             if ($pallet_id_int != -1) {
-                $final_options = PutawayController::PutawayMovingFetch($pallet_id_int);
+                $final_options = PutawayController::PutawayMovingFetch($member_id, $pallet_id_int);
 
                 if (count($final_options) != 0) {
-                    foreach($final_options as $final_option) {
-                        DB::insert(DB::raw(
-                            "INSERT INTO StorageOptions (
-                                member_id,
-                                row_id,
-                                pallet_id
-                            ) VALUES (
-                                $member_id,
-                                $final_option,
-                                $pallet_id_int
-                            )
-                        "));
-
-                        echo "Row {$final_option}<br>";
-                    }
-        
                     // update status palet menjadi MOVING_TO_STORAGE_ZONE (3)
                     DB::update(DB::raw(
                         "UPDATE Pallets
@@ -209,6 +215,8 @@ class PutawayController extends Controller {
                         WHERE
                             if = $pallet_id_int
                     "));
+
+                    echo "Row {$final_option}<br>";
                 } else {
                     echo "No available rows.<br>";
                 }
@@ -266,6 +274,18 @@ class PutawayController extends Controller {
                             row_number = $row_id_int,
                             column_number = $column_number,
                             stack_number = $stack_number
+                    "));
+
+                    DB::delete(DB::raw(
+                        "DELETE FROM StorageOptions
+                        WHERE
+                            member_id = $member_id
+                    "));
+
+                    DB::delete(DB::raw(
+                        "DELETE FROM StorageOptions
+                        WHERE
+                            row_id = $row_id_int                            
                     "));
                 }
             } else {
