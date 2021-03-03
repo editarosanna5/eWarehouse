@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 
 class ComponentCheck {
+    public static function CurrentDate () {
+        date_default_timezone_set('Asia/Jakarta');
+        
+        return date('Y-m-d');
+    }
 
     public static function DeviceID ($device_id, $required_group_id) {
         $temp = explode("-", $device_id);
@@ -17,9 +22,7 @@ class ComponentCheck {
     }
 
     public static function ProductionDate ($production_date) {
-        date_default_timezone_set('Asia/Jakarta');
-
-        $temp = (strtotime($today)-strtotime($date))/(60*60*24);
+        $temp = (strtotime(ComponentCheck::CurrentDate())-strtotime($production_date))/(60*60*24);
 
         if ($temp >= 0)
             return $temp;
@@ -57,5 +60,19 @@ class ComponentCheck {
             else
                 return -1;
         }
+    }
+
+    public static function MultipleInputsToArray ($input, $toInt) {
+        $input = str_replace(' ', '', $input);
+        $temp = explode("','", $temp);
+        
+        foreach ($temp as &$item) {
+            $item = str_replace("'", "", $item);
+            
+            if ($toInt)
+                $item = intval($item);
+        }
+
+        return $temp;
     }
 }

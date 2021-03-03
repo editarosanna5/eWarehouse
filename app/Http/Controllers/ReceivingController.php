@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request as Request;
 
 class ReceivingController extends Controller {
-    public function ReceivingUpdate () {
+    public function ReceivingUpdate (Request $request) {
         // simpan data packaging sementara di database
         $po_number = $request->get('po_number');
         $type_id = $request->get('type_id');

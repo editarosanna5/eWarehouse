@@ -27,7 +27,7 @@ CREATE TABLE `Rows` (                               -- line penyimpanan
 
 CREATE TABLE `Pallets` (                            -- palet
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    po_number INTEGER NOT NULL UNIQUE,
+    po_number INTEGER NOT NULL,
     type_id INTEGER,
     status_id INTEGER DEFAULT 2 NOT NULL,
     bag_count INTEGER DEFAULT 0 NOT NULL,
@@ -69,16 +69,77 @@ CREATE TABLE `GroupMembers` (                            -- client (sensor)
 CREATE TABLE `ProductionData` (
     group_id INTEGER DEFAULT 2 NOT NULL,
     member_id INTEGER PRIMARY KEY,
-    po_number INTEGER NOT NULL UNIQUE,
+    po_number INTEGER NOT NULL,
     type_id INTEGER NOT NULL,
     bag_count INTEGER NOT NULL,
     production_date DATE NOT NULL,
 
     CONSTRAINT FOREIGN KEY (group_id)
-        REFERENCES `GroupMembers` (group_id)
+        REFERENCES `Groups` (id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FOREIGN KEY (member_id)
         REFERENCES `GroupMembers` (member_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE `OrderStatus` (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    order_status  VARCHAR(255) NOT NULL UNIQUE,
+
+    INDEX USING BTREE(order_status)
+) ENGINE = InnoDB;
+
+CREATE TABLE `OrderData` (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    group_id INTEGER DEFAULT 4 NOT NULL,
+    member_id INTEGER NOT NULL,
+    do_number INTEGER NOT NULL,
+    order_date DATE NOT NULL,
+    status_id INTEGER DEFAULT 1 NOT NULL,
+
+    INDEX USING BTREE(do_number),
+
+    CONSTRAINT FOREIGN KEY (group_id)
+        REFERENCES `Groups` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (member_id)
+        REFERENCES `GroupMembers` (member_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (status_id)
+        REFERENCES `OrderStatus` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE `OrderDetails` (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    order_id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    type_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+
+    CONSTRAINT FOREIGN KEY (order_id)
+        REFERENCES `OrderData` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (type_id)
+        REFERENCES `Types` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+CREATE TABLE `DeliveryDetails` (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    order_id INTEGER NOT NULL,
+    pallet_id INTEGER NOT NULL,
+    type_id INTEGER NOT NULL,
+    bag_count INTEGER DEFAULT 0 NOT NULL,
+    production_date DATE NOT NULL,
+
+    CONSTRAINT FOREIGN KEY (order_id)
+        REFERENCES `OrderData` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (pallet_id)
+        REFERENCES `Pallets` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (type_id)
+        REFERENCES `Types` (id)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
@@ -104,31 +165,15 @@ CREATE TABLE `StorageOptions` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `PickupOptions` (
-    device_number INTEGER NOT NULL,
+    id INTEGER NOT NULL,
     pallet_id INTEGER NOT NULL,
 
-    INDEX USING BTREE(device_number),
-    INDEX USING BTREE(pallet_id),
-
-    CONSTRAINT PRIMARY KEY (device_number,pallet_id),
-    CONSTRAINT FOREIGN KEY (device_number)
-        REFERENCES `Devices` (id)
+    CONSTRAINT PRIMARY KEY (id,pallet_id),
+    CONSTRAINT FOREIGN KEY (id)
+        REFERENCES `OrderDetails` (id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FOREIGN KEY (pallet_id)
         REFERENCES `Pallets` (id)
-        ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB;
-
-CREATE TABLE `PickupStatus` (
-    device_number INTEGER NOT NULL,
-    required_pallet_count INTEGER NOT NULL,
-
-    INDEX USING BTREE(device_number),
-    INDEX USING BTREE(required_pallet_count),
-
-    CONSTRAINT PRIMARY KEY (device_number),
-    CONSTRAINT FOREIGN KEY (device_number)
-        REFERENCES `Devices` (id)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
