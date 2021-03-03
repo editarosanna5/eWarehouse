@@ -53,10 +53,10 @@ CREATE TABLE `Pallets` (                            -- palet
 
 CREATE TABLE `Groups` (                       -- posisi client (sensor)
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    group VARCHAR(255) NOT NULL UNIQUE
+    group_name VARCHAR(255) NOT NULL UNIQUE
 ) ENGINE = InnoDB;
 
-CREATE TABLE `GroupMembers` (                            -- client (sensor)
+CREATE TABLE `GroupMembers` (                           -- client (sensor)
     group_id INTEGER NOT NULL,
     member_id INTEGER NOT NULL,
     
@@ -65,6 +65,8 @@ CREATE TABLE `GroupMembers` (                            -- client (sensor)
         REFERENCES `Groups` (id)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
+
+-- ALTER TABLE `GroupMembers` ENGINE = InnoDB;
 
 CREATE TABLE `ProductionData` (
     group_id INTEGER DEFAULT 2 NOT NULL,
@@ -76,10 +78,10 @@ CREATE TABLE `ProductionData` (
 
     CONSTRAINT FOREIGN KEY (group_id)
         REFERENCES `Groups` (id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT FOREIGN KEY (member_id)
-        REFERENCES `GroupMembers` (member_id)
         ON DELETE CASCADE ON UPDATE CASCADE
+    -- CONSTRAINT FOREIGN KEY (member_id)
+    --     references `GroupMembers` (member_id)
+    --     ON DELETE CASCADE ON UPDATE CASCADE,
 ) ENGINE = InnoDB;
 
 CREATE TABLE `OrderStatus` (
@@ -102,9 +104,9 @@ CREATE TABLE `OrderData` (
     CONSTRAINT FOREIGN KEY (group_id)
         REFERENCES `Groups` (id)
         ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT FOREIGN KEY (member_id)
-        REFERENCES `GroupMembers` (member_id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
+    -- CONSTRAINT FOREIGN KEY (member_id)
+    --     references `GroupMembers` (member_id)
+    --     ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FOREIGN KEY (status_id)
         REFERENCES `OrderStatus` (id)
         ON DELETE CASCADE ON UPDATE CASCADE
@@ -112,7 +114,7 @@ CREATE TABLE `OrderData` (
 
 CREATE TABLE `OrderDetails` (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    order_id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    order_id INTEGER NOT NULL,
     type_id INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
 
@@ -152,10 +154,10 @@ CREATE TABLE `StorageOptions` (
     INDEX USING BTREE(row_id),
     INDEX USING BTREE(pallet_id),
     
-    CONSTRAINT PRIMARY KEY (member_id,row_id),
-    CONSTRAINT FOREIGN KEY (member_id)
-        REFERENCES `Devices` (id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT PRIMARY KEY (member_id, row_id),
+    -- CONSTRAINT FOREIGN KEY (member_id)
+    --     references `GroupMembers` (member_id)
+    --     ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FOREIGN KEY (row_id)
         REFERENCES `Rows` (id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -178,23 +180,24 @@ CREATE TABLE `PickupOptions` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `LoadingStatus` (
-    device_number INTEGER NOT NULL,
+    member_id INTEGER NOT NULL,
     required_bag_count INTEGER NOT NULL,
 
-    INDEX USING BTREE(device_number),
+    INDEX USING BTREE(member_id),
     INDEX USING BTREE(required_bag_count),
 
-    CONSTRAINT PRIMARY KEY (device_number),
-    CONSTRAINT FOREIGN KEY (device_number)
-        REFERENCES `Devices` (id)
-        ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT PRIMARY KEY (member_id)
+    -- CONSTRAINT FOREIGN KEY (member_id)
+    --     references `GroupMembers` (member_id)
+    --     ON DELETE CASCADE ON UPDATE CASCADE
 
 ) ENGINE = InnoDB;
 
-SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InitDatabase.sql;
-SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InitTables.sql;
-SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertRow.sql;
-SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertDevice.sql;
-SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertPallet.sql;
-SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/ResetDatabase.sql;
-SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/setup.sql;
+USE eWarehouse;
+
+-- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InitTables.sql;
+-- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertRow.sql;
+-- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertDevice.sql;
+-- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertPallet.sql;
+-- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/ResetDatabase.sql;
+-- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/setup.sql;

@@ -14,13 +14,14 @@ BEGIN
 
 	-- Daftar Status Palet
 	-- INSERT INTO `PalletStatus` (pallet_status) VALUES ('RESERVED_PALLET_ID');
-	INSERT INTO `PalletStatus` (pallet_status) VALUES ('READY');
+	INSERT INTO `PalletStatus` (pallet_status) VALUES ('UNFILLED');
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('WAITING_TO_BE_STORED');
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('MOVING_TO_STORAGE_ZONE');
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('ON_STORAGE');
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('MOVING_TO_LOADING_ZONE');
-	INSERT INTO `PalletStatus` (pallet_status) VALUES ('READY_LOADING_ZONE');
+	INSERT INTO `PalletStatus` (pallet_status) VALUES ('WAITING_TO_BE_LOADED');
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('LOADING');
+	INSERT INTO `PalletStatus` (pallet_status) VALUES ('READY_LOADING_ZONE');
 
 	-- Daftar Status Karung
 	INSERT INTO `BagStatus` (bag_status) VALUES ('ID_READY');
@@ -29,11 +30,15 @@ BEGIN
 	INSERT INTO `BagStatus` (bag_status) VALUES ('LOADED');
 
 	-- Daftar Kelompok Perangkat
-	INSERT INTO `DeviceGroups` (group_name) VALUES ('PACKAGING_ZONE');
-	INSERT INTO `DeviceGroups` (group_name) VALUES ('PRINTER');
+	INSERT INTO `DeviceGroups` (group_name) VALUES ('CONVEYOR_PACKAGING');
 	INSERT INTO `DeviceGroups` (group_name) VALUES ('FORKLIFT_STORING');
 	INSERT INTO `DeviceGroups` (group_name) VALUES ('FORKLIFT_PICKING');
-	INSERT INTO `DeviceGroups` (group_name) VALUES ('LOADING_ZONE');
+	INSERT INTO `DeviceGroups` (group_name) VALUES ('CONVEYOR_LOADING');
+
+	-- Daftar Status DO
+	INSERT INTO `OrderStatus` (order_status) VALUES ('ON_QUEUE');
+	INSERT INTO `OrderStatus` (order_status) VALUES ('ONGOING');
+	INSERT INTO `OrderStatus` (order_status) VALUES ('COMPLETED');
 END $$
 
 DELIMITER ;
