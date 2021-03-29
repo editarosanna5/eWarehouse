@@ -10,18 +10,18 @@ class ReceivingController extends Controller {
         $po_number = $request->get('po_number');
         $type_id = $request->get('type_id');
         $bag_count = $request->get('bag_count');
-        $production_date = $request->get('production_date');
+        $production_date = '"' . $request->get('production_date') . '"';
         $packaging_line = $request->get('packaging_line');
 
         // periksa apakah terdapat aktivitas di packaging line
         $temp = DB::select(DB::raw(
-            "SELECT COUNT(*)
+            "SELECT COUNT(*) as foundcount
             FROM ProductionData
             WHERE
                 member_id = $packaging_line
         "));
 
-        if ($temp == null) {
+        if ($temp[0]->foundcount == null) {
             // tidak ada aktivitas di packaging line
             DB::insert(DB::raw(
                 "INSERT INTO ProductionData (

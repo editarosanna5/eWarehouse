@@ -12,8 +12,8 @@ class ComponentCheck {
 
     public static function DeviceID ($device_id, $required_group_id) {
         $temp = explode("-", $device_id);
-        $group_id = $temp[0];
-        $device_number = $temp[1];
+        $group_id = intval($temp[0]);
+        $device_number = intval($temp[1]);
 
         if ($group_id == $required_group_id)
             return $device_number;
@@ -51,7 +51,7 @@ class ComponentCheck {
                 "SELECT COUNT(*)
                 FROM Pallets
                 WHERE
-                    pallet_id = $pallet_id_int
+                    id = $pallet_id_int
                     AND status_id = $required_pallet_status
             "));
             

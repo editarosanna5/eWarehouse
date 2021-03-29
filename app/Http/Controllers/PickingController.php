@@ -74,6 +74,18 @@ class PickingController extends Controller {
                 }
             }
         }
+
+        if (count($option_set_1) != 0) {
+            $final_options = $option_set_1;
+        } elseif (count($option_set_2) != 0) {
+            $final_options = $option_set_2;
+        } elseif (count($option_set_3) != 0) {
+            $final_options = $option_set_3;
+        } elseif (count($option_set_4) != 0) {
+            $final_options = $option_set_4;
+        }
+
+        return $final_options;
     }
 
     // menyimpan data order dari input ke database
@@ -118,6 +130,7 @@ class PickingController extends Controller {
         for ($i = 0; $i < count($type_id); $i++) {
             $type = $type_id[$i];
             $quantity = $bag_count[$i];
+            $pallet_options = PickingController::PickupOptionsFetch($type);
             DB::insert(DB::raw(
                 "INSERT INTO OrderDetails (
                     order_id,
@@ -129,6 +142,19 @@ class PickingController extends Controller {
                     $quantity
                 )
             "));
+
+            for ($j = 0; $j < count($pallet_options); $i++) {
+                $pallet_option = $pallet_options[$j];
+                DB::insert(DB::raw(
+                    "INSERT INTO PickupOptions (
+                        order_id,
+                        pallet_id
+                    ) VALUES (
+                        $order_id,
+                        $pallet_option
+                    )
+                "));
+            }
         }
     }
 
@@ -150,7 +176,7 @@ class PickingController extends Controller {
     }
 
     public function PickingArrivalUpdate () {
-        
+        $member_id = 
     }
 
     public function PickingLoadingUpdate () {

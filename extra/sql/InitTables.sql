@@ -23,17 +23,11 @@ BEGIN
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('LOADING');
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('READY_LOADING_ZONE');
 
-	-- Daftar Status Karung
-	INSERT INTO `BagStatus` (bag_status) VALUES ('ID_READY');
-	INSERT INTO `BagStatus` (bag_status) VALUES ('READY');
-	INSERT INTO `BagStatus` (bag_status) VALUES ('ON_PALLET');
-	INSERT INTO `BagStatus` (bag_status) VALUES ('LOADED');
-
 	-- Daftar Kelompok Perangkat
-	INSERT INTO `DeviceGroups` (group_name) VALUES ('CONVEYOR_PACKAGING');
-	INSERT INTO `DeviceGroups` (group_name) VALUES ('FORKLIFT_STORING');
-	INSERT INTO `DeviceGroups` (group_name) VALUES ('FORKLIFT_PICKING');
-	INSERT INTO `DeviceGroups` (group_name) VALUES ('CONVEYOR_LOADING');
+	INSERT INTO `Groups` (group_name) VALUES ('CONVEYOR_PACKAGING');
+	INSERT INTO `Groups` (group_name) VALUES ('FORKLIFT_STORING');
+	INSERT INTO `Groups` (group_name) VALUES ('FORKLIFT_PICKING');
+	INSERT INTO `Groups` (group_name) VALUES ('CONVEYOR_LOADING');
 
 	-- Daftar Status DO
 	INSERT INTO `OrderStatus` (order_status) VALUES ('ON_QUEUE');

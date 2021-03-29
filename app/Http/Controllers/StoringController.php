@@ -25,7 +25,11 @@ class StoringController extends Controller {
 
     // update status palet yang siap disimpan
     // status palet menjadi = waiting_to_be_stored
-    public function StoringUpdate ($device_id, $pallet_id) {
+    // public function StoringUpdate ($device_id, $pallet_id) {
+    public function StoringUpdate (Request $request) {
+        $device_id = $request->get('device_id');
+        $pallet_id = $request->get('pallet_id');
+
         // periksa device ID
         $member_id = ComponentCheck::DeviceID($device_id, 1);
         // periksa pallet ID
@@ -42,15 +46,15 @@ class StoringController extends Controller {
                     FROM
                         ProductionData
                     WHERE
-                        packaging_line = $member_id
+                        member_id = $member_id
                 "));
                 
                 // data update pallet
                 $po_number = $pallet_data[0]->po_number;
                 $type_id = $pallet_data[0]->type_id;
                 $status_id = 2; // WAITING_TO_BE_STORED
-                $bag_count = $pallet_id[0]->bag_count;
-                $production_date = $pallet_data[0]->production_date;
+                $bag_count = $pallet_data[0]->bag_count;
+                $production_date = '"' . $pallet_data[0]->production_date . '"';
 
                 DB::update(DB::raw(
                     "UPDATE Pallets

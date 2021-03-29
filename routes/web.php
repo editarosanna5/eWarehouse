@@ -25,7 +25,7 @@ $router->group(['prefix' => 'storing'], function() use ($router) {
 });
 
 // Router http://e-warehouse/putaway
-$router->group(['prefix' => 'storing'], function() use ($router) {
+$router->group(['prefix' => 'putaway'], function() use ($router) {
     // Router http://e-warehouse/putaway/moving
     $router->get('moving', 'PutawayController@PutawayMovingFetch');
     $router->put('moving', 'PutawayController@PutawayMovingUpdate');

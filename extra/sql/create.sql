@@ -66,8 +66,6 @@ CREATE TABLE `GroupMembers` (                           -- client (sensor)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
--- ALTER TABLE `GroupMembers` ENGINE = InnoDB;
-
 CREATE TABLE `ProductionData` (
     group_id INTEGER DEFAULT 2 NOT NULL,
     member_id INTEGER PRIMARY KEY,
@@ -81,7 +79,7 @@ CREATE TABLE `ProductionData` (
         ON DELETE CASCADE ON UPDATE CASCADE
     -- CONSTRAINT FOREIGN KEY (member_id)
     --     references `GroupMembers` (member_id)
-    --     ON DELETE CASCADE ON UPDATE CASCADE,
+    --     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
 CREATE TABLE `OrderStatus` (
@@ -195,9 +193,9 @@ CREATE TABLE `LoadingStatus` (
 
 USE eWarehouse;
 
--- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InitTables.sql;
--- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertRow.sql;
--- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertDevice.sql;
--- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertPallet.sql;
--- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/ResetDatabase.sql;
--- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/setup.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InitTables.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertRow.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertDevice.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertPallet.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/ResetDatabase.sql;
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/setup.sql;
