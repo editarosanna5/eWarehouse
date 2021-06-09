@@ -20,8 +20,8 @@
         "description" : "menerima id palet dan menyimpan data produksi sesuai id palet dan id devais scanner palet",
         "input-method" : "qr scanner",
         "input" : {
-            "device_id" : "1-2",
-            "pallet_id" : "P-0000000012"
+            "device_id" : "1-1",
+            "pallet_id" : "P-0000000001"
         }
     },
     {
@@ -32,7 +32,7 @@
         "input-method" : "qr scanner",
         "input" : {
             "device_id" : "2-1",
-            "pallet_id" : "P-0000000012"
+            "pallet_id" : "P-0000000001"
         }
     },
     {
@@ -43,7 +43,7 @@
         "input-method" : "qr scanner",
         "input" : {
             "device_id" : "2-1",
-            "row_id" : "L-0005"
+            "row_id" : "L-0001"
         }
     },
     {

@@ -31,22 +31,21 @@ class ComponentCheck {
     }
 
     public static function RowID ($row_id) {
-        $temp = explode("-", $row_id);
-        
-        if ($temp[0] == "L") {
-            if (preg_match('/[0-9]{4}/', $temp[1]))
-                return intval($temp[1]);
+        if (preg_match('/L-[0-9]{4}/', $row_id)) {
+            $temp = explode("-", $row_id);
+
+            return intval($temp[1]);
+        } else {
+            return -1;
         }
-        
-        return -1;
     }
 
     public static function PalletID ($pallet_id, $required_pallet_status) {
-        $temp = explode("-", $pallet_id);
-        
-        if ($temp[0] == "P" && preg_match('/[0-9]{10}/', $temp[1])) {
+        if (preg_match('/P-[0-9]{10}/', $pallet_id)) {
+            $temp = explode("-", $pallet_id);
+
             $pallet_id_int = intval($temp[1]);
-            
+
             $temp = DB::select(DB::raw(
                 "SELECT COUNT(*) AS n
                 FROM Pallets
@@ -54,11 +53,14 @@ class ComponentCheck {
                     id = $pallet_id_int
                     AND status_id = $required_pallet_status
             "));
-            
-            if ($temp[0]->n != null)
+
+            if ($temp[0]->n > 0) {
                 return $pallet_id_int;
-            else
+            } else {
                 return -1;
+            }
+        } else {
+            return -1;
         }
     }
 
