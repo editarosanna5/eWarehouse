@@ -214,6 +214,43 @@ class PickingController extends Controller {
         }        
     }
 
+    // verifikasi row id
+    public function PickingLineUpdate (Request $request) {
+        $device_id = $request->get('device_id');
+        $row_id = $request->get('row_id');
+        $member_id = ComponentCheck::DeviceID($device_id, 3);
+
+        if ($member_id != -1) {
+            $row_id_int = ComponentCheck::RowID($row_id);
+
+            if ($row_id_int != -1) {
+                $temp = DB::select(DB::raw(
+                    "SELECT COUNT(*) AS found
+                    FROM LoadingStatus
+                        JOIN OrderDetails
+                            ON LoadingStatus.id = OrderDetails.id
+                        JOIN PickupOptions
+                            ON OrderDetails.id = PickupOptions.id
+                        JOIN Pallets
+                            ON PickupOptions.pallet_id = Pallets.id
+                    WHERE
+                        LoadingStatus.member_id = $member_id
+                        AND Pallets.row_number = $row_id_int
+                "));
+
+                $count = $temp[0]->found;
+
+                if ($count > 0) {
+                    echo "Row available for pickup. {$count} matches found.";
+                } else {
+                    echo "Row unavailable for pickup.";
+                }
+            }
+        } else {
+            echo "Unauthorized device.";
+        }
+    }
+
     // update status palet menjadi MOVING_TO_LOADING_ZONE ketika palet discan
     public function PickingMovingUpdate (Request $request) {
         $device_id = $request->get('device_id');
@@ -298,135 +335,170 @@ class PickingController extends Controller {
         }
     }
 
-    // update status palet menjadi READY_LOADING_ZONE ketika palet sampai dan discan di loading zone
-    public function PickingArrivalUpdate (Request $request) {
-        $device_id = $request->get('device_id');
-        $pallet_id = $request->get('pallet_id');
-        $member_id = ComponentCheck::DeviceID($device_id, 4);
+    // update status palet menjadi WAITING_TO_BE_LOADED ketika palet sampai dan discan di loading zone
+    public function PickingArrivalUpdate ($pallet_id_int) {
+        DB::update(DB::raw(
+            "UPDATE Pallets
+            SET
+                status_id = 6
+            WHERE
+                id = $pallet_id_int    
+        "));
 
-        if ($member_id != -1) {
-            // verifikasi pallet id
-            $pallet_id_int = ComponentCheck::PalletID($pallet_id, 5);
-
-            // update status palet menjadi WAITING_TO_BE_LOADED
-            if ($pallet_id_int != -1) {
-                DB::update(DB::raw(
-                    "UPDATE Pallets
-                    SET
-                        status_id = 6
-                    WHERE
-                        id = $pallet_id_int    
-                "));
-
-                echo "Pallet arrived at loading zone. Waiting to be loaded.";
-            } else {
-                echo "Pallet is not available for this current action.";
-            }
-        } else {
-            echo "Unauthorized device.";
-        }        
+        echo "Pallet arrived at loading zone. Waiting to be loaded.";
     }
     
-    // memilih palet yang akan diloading
-    public function PickingLoadingSelect (Request $request) {
+    // update status palet menjadi LOADING
+    public function PickingLoadingSelect ($pallet_id_int, $member_id) {
+        DB::update(DB::raw(
+            "UPDATE Pallets
+            SET
+                status_id = 7
+            WHERE
+                id = $pallet_id_int                        
+        "));
+
+        $temp = DB::select(DB::raw(
+            "SELECT id as order_id
+            FROM OrderData
+            WHERE
+                member_id = $member_id
+                AND status_id = 2
+        "));
+
+        $order_id = $temp[0]->order_id;
+
+        $temp = DB::select(DB::raw(
+            "SELECT
+                type_id,
+                production_date
+            FROM Pallets
+            WHERE
+                id = $pallet_id_int
+        "));
+
+        $type_id = $temp[0]->type_id;
+        $production_date = '"' . $temp[0]->production_date . '"';
+
+        DB::insert(DB::raw(
+            "INSERT INTO DeliveryDetails (
+                order_id,
+                pallet_id,
+                type_id,
+                production_date,
+                picking_line
+            ) VALUES (
+                $order_id,
+                $pallet_id_int,
+                $type_id,
+                $production_date,
+                $member_id
+            )
+        "));
+
+        echo "Loading pallet {$pallet_id_int}.<br>";
+    }
+
+    // handheld scanner loading zone
+    public function PickingPalletUpdate (Request $request) {
         $device_id = $request->get('device_id');
         $pallet_id = $request->get('pallet_id');
         $member_id = ComponentCheck::DeviceID($device_id, 4);
 
         if ($member_id != -1) {
-            // verifikasi pallet id
-            $pallet_id_int = ComponentCheck::PalletID($pallet_id, 6);
+            // periksa status pallet
+            $pallet_id_int = ComponentCheck::PalletID($pallet_id, 5);
 
-            // update status palet menjadi LOADING
             if ($pallet_id_int != -1) {
-                DB::update(DB::raw(
-                    "UPDATE Pallets
-                    SET
-                        status_id = 7
-                    WHERE
-                        id = $pallet_id_int                        
-                "));
+            // palet memasuki area loading
+                // status palet awal = MOVING_TO_LOADING_ZONE (5)
+                // status palet akhir = WAITING_TO_BE_LOADED (6)
+                
+                PickingController::PickingArrivalUpdate($pallet_id_int);
 
-                $temp = DB::select(DB::raw(
-                    "SELECT id as order_id
-                    FROM OrderData
-                    WHERE
-                        member_id = $member_id
-                        AND status_id = 2
-                "));
-
-                $order_id = $temp[0]->order_id;
-
-                $temp = DB::select(DB::raw(
-                    "SELECT
-                        type_id,
-                        production_date
-                    FROM Pallets
-                    WHERE
-                        id = $pallet_id_int
-                "));
-
-                $type_id = $temp[0]->type_id;
-                $production_date = $temp[0]->production_date;
-
-                DB::insert(DB::raw(
-                    "INSERT INTO DeliveryDetails (
-                        order_id,
-                        pallet_id,
-                        type_id,
-                        production_date,
-                        picking_line
-                    ) VALUES (
-                        $order_id,
-                        $pallet_id_int,
-                        $type_id,
-                        $production_date,
-                        $member_id
-                    )
-                "));
-
-                echo "Loading pallet {$pallet_id}.<br>";
             } else {
-                echo "Pallet is not available for this current action.";
+                $pallet_id_int = ComponentCheck::PalletID($pallet_id, 6);
+
+                if ($pallet_id_int != -1) {
+                // palet yang akan diloading
+                    // status palet awal = WAITING_TO_BE_LOADED (6)
+                    // status palet akhir = LOADING (7)
+
+                    PickingController::PickingLoadingSelect ($pallet_id_int, $member_id);
+
+                } else {
+                    echo "Pallet unavailable for this operation.";
+                }
             }
         } else {
             echo "Unauthorized device.";
         }
     }
 
-    // counter loading palet
-    public function PickingLoadingUpdate (Request $request) {
+    // counter loading karung
+    public function PickingBagUpdate (Request $request) {
         $device_id = $request->get('device_id');
-        $member_id = ComponentCheck::DeviceID($device_id, 4);
+        $member_id = ComponentCheck::DeviceID($device_id, 5);
 
         if ($member_id != -1) {
-
-            $temp = DB::select(DB::raw(
+            $temp = DB::select(DB:raw(
                 "SELECT
-                    DeliveryDetails.pallet_id AS pallet_id,
+                    Pallets.id AS pallet_id,
                     OrderDetails.id AS order_detail_id
                 FROM Pallets
-                    JOIN DeliveryDetails
-                        ON Pallets.id = DeliveryDetails.pallet_id
-                    JOIN OrderData
-                        ON DeliveryDetails.order_id = OrderData.id
                     JOIN OrderDetails
-                        ON OrderData.id = OrderDetails.order_id
+                        ON Pallets.type_id = OrderDetails.type_id
+                    JOIN OrderData
+                        ON OrderDetails.order_id = OrderData
                 WHERE
-                    Pallets.status_id = 7
-                    AND DeliveryDetails.picking_line = $member_id
-            ");
+                    OrderData.member_id = $member_id
+                    AND OrderData.status_id = 2
+                    AND Pallets.status_id = 7
+            "));
 
             $pallet_id = $temp[0]->pallet_id;
+            $order_detail_id = $temp[0]->order_detail_id;
 
-            // update loaded_bag_count pada LoadingStatus
-            DB::update(DB::raw(
-                "UPDATE LoadingStatus
-                SET
-                    available_bag_count = available_bag_count - 1,
-                    loaded_bag_count = loaded_bag_count + 1
+            // periksa jumlah karung tersisa pada palet
+            $temp = DB::select(DB::raw(
+                "SELECT pallet_bag_count
+                FROM Pallets
                 WHERE
-                    id = $order_detail_id
+                    id = $pallet_id
+            "));
+
+            $pallet_bag_count = $temp[0]->pallet_bag_count;
+
+            if ($pallet_bag_count == 1) {   // sisa karung = 1
+                // update data pallet
+                    // bag_count =- 1 (= 0)
+                    // status_id = 1 (EMPTY)
+                DB::update(DB::raw(
+                    "UPDATE Pallets
+                    SET
+                        po_number = NULL,
+                        type_id = NULL,
+                        status_id = 1,
+                        bag_count = bag_count - 1,
+                        production_date = NULL
+                "));
+            } else {    // sisa karung > 1
+                // periksa jumlah loaded_bag_count
+                $temp = DB::select(DB::raw(
+                    "SELECT loaded_bag_count
+                    FROM LoadingStatus
+                    WHERE
+                        
+                "));
+            }
+            
+            // update jumlah karung tersisa pada pallet
+            DB::update(DB::raw(
+                "UPDATE Pallets
+                SET
+                    
+                WHERE
+                    id = $pallet_id
             "));
 
             // loaded_bag_count terpenuhi

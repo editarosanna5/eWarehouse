@@ -47,12 +47,15 @@ $router->group(['prefix' => 'picking'], function() use ($router) {
     // Router http://e-warehouse/picking/select
     $router->get('select', 'PickingController@PickingSelect');
 
+    // Router http://e-warehouse/picking/line
+    $router->put('line', 'PickingController@PickingLineUpdate');
+
     // Router http://e-warehouse/picking/moving
     $router->put('moving', 'PickingController@PickingMovingUpdate');
 
-    // Router http://e-warehouse/picking/arrival
-    $router->put('arrival', 'PickingController@PickingArrivalUpdate');
+    // Router http://e-warehouse/picking/pallet
+    $router->put('pallet', 'PickingController@PickingPalletUpdate');
 
-    // Router http://e-warehouse/picking/loading
-    $router->put('loading', 'PickingController@PickingLoadingUpdate');
+    // Router http://e-warehouse/picking/bag
+    $router->put('bag', 'PickingController@PickingBagUpdate');
 });

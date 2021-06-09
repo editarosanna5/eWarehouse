@@ -64,9 +64,20 @@
         "method" : "GET",
         "route" : "PickingController@PickingSelect",
         "description" : "memilih order yang akan dieksekusi",
-        "input-method" : "interface forklift",
+        "input-method" : "web form",
         "input" : {
             "order_id" : "1",
+            "device_id" : "3-1"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/picking/line",
+        "method" : "PUT",
+        "route" : "PickingController@PickingLineUpdate",
+        "description" : "scanner forklift memeriksa id line",
+        "input-method" : "qr scanner",
+        "input" : {
+            "row_id" : "L-0005",
             "device_id" : "3-1"
         }
     },
@@ -82,31 +93,31 @@
         }
     },
     {
-        "url" : "http://e-warehouse/picking/arrival",
+        "url" : "http://e-warehouse/picking/pallet",
         "method" : "PUT",
-        "route" : "PickingController@PickingArrivalUpdate",
-        "description" : "scanner di loading area membaca qr pada palet",
+        "route" : "PickingController@PickingPalletUpdate",
+        "description" : "handheld scanner loading zone: pallet masuk ke loading zone",
         "input-method" : "qr scanner",
         "input" : {
-            "pallet_id" : "P-0000000012",
-            "device_id" : "4-1"
+            "device_id" : "4-1",
+            "pallet_id" : "P-0000000012"
         }
     },
     {
-        "url" : "http://e-warehouse/picking/loading/select",
+        "url" : "http://e-warehouse/picking/pallet",
         "method" : "PUT",
-        "route" : "PickingController@PickingLoadingSelect",
-        "description" : "memilih palet yang akan diloading",
+        "route" : "PickingController@PickingPalletUpdate",
+        "description" : "handheld scanner loading zone: memilih pallet untuk diloading",
         "input-method" : "qr scanner",
         "input" : {
-            "pallet_id" : "P-0000000012",
-            "device_id" : "4-1"
+            "device_id" : "4-1",
+            "pallet_id" : "P-0000000012"
         }
     },
     {
-        "url" : "http://e-warehouse/picking/loading",
+        "url" : "http://e-warehouse/picking/bag",
         "method" : "PUT",
-        "route" : "PickingController@PickingLoadingUpdate",
+        "route" : "PickingController@PickingBagUpdate",
         "description" : "menghitung jumlah karung yang sedang loading",
         "input-method" : "scanner conveyor loading",
         "input" : {
