@@ -29,7 +29,7 @@ CREATE TABLE `Pallets` (                            -- palet
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     po_number INTEGER NOT NULL,
     type_id INTEGER,
-    status_id INTEGER DEFAULT 2 NOT NULL,
+    status_id INTEGER DEFAULT 1 NOT NULL,
     bag_count INTEGER DEFAULT 0 NOT NULL,
     row_number INTEGER,
     column_number INTEGER,
@@ -67,7 +67,7 @@ CREATE TABLE `GroupMembers` (                           -- client (sensor)
 ) ENGINE = InnoDB;
 
 CREATE TABLE `ProductionData` (
-    group_id INTEGER DEFAULT 2 NOT NULL,
+    group_id INTEGER DEFAULT 1 NOT NULL,
     member_id INTEGER PRIMARY KEY,
     po_number INTEGER NOT NULL,
     type_id INTEGER NOT NULL,
@@ -76,10 +76,10 @@ CREATE TABLE `ProductionData` (
 
     CONSTRAINT FOREIGN KEY (group_id)
         REFERENCES `Groups` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (group_id, member_id)
+        REFERENCES `GroupMembers` (group_id, member_id)
         ON DELETE CASCADE ON UPDATE CASCADE
-    -- CONSTRAINT FOREIGN KEY (member_id)
-    --     references `GroupMembers` (member_id)
-    --     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
 CREATE TABLE `OrderStatus` (
@@ -97,16 +97,14 @@ CREATE TABLE `OrderData` (
     order_date DATE NOT NULL,
     status_id INTEGER DEFAULT 1 NOT NULL,
 
+    INDEX USING BTREE(member_id),
     INDEX USING BTREE(do_number),
 
-    CONSTRAINT FOREIGN KEY (group_id)
-        REFERENCES `Groups` (id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    -- CONSTRAINT FOREIGN KEY (member_id)
-    --     references `GroupMembers` (member_id)
-    --     ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FOREIGN KEY (status_id)
         REFERENCES `OrderStatus` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (group_id, member_id)
+        REFERENCES `GroupMembers` (group_id, member_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
@@ -131,6 +129,7 @@ CREATE TABLE `DeliveryDetails` (
     type_id INTEGER NOT NULL,
     bag_count INTEGER DEFAULT 0 NOT NULL,
     production_date DATE NOT NULL,
+    picking_line INTEGER NOT NULL,
 
     CONSTRAINT FOREIGN KEY (order_id)
         REFERENCES `OrderData` (id)
@@ -144,6 +143,7 @@ CREATE TABLE `DeliveryDetails` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `StorageOptions` (
+    group_id INTEGER DEFAULT 2 NOT NULL,
     member_id INTEGER NOT NULL,
     row_id INTEGER NOT NULL,
     pallet_id INTEGER NOT NULL,
@@ -153,9 +153,12 @@ CREATE TABLE `StorageOptions` (
     INDEX USING BTREE(pallet_id),
     
     CONSTRAINT PRIMARY KEY (member_id, row_id),
-    -- CONSTRAINT FOREIGN KEY (member_id)
-    --     references `GroupMembers` (member_id)
-    --     ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (group_id)
+        REFERENCES `Groups` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (group_id, member_id)
+        REFERENCES `GroupMembers` (group_id, member_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FOREIGN KEY (row_id)
         REFERENCES `Rows` (id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -168,7 +171,7 @@ CREATE TABLE `PickupOptions` (
     id INTEGER NOT NULL,
     pallet_id INTEGER NOT NULL,
 
-    CONSTRAINT PRIMARY KEY (id,pallet_id),
+    CONSTRAINT PRIMARY KEY (id, pallet_id),
     CONSTRAINT FOREIGN KEY (id)
         REFERENCES `OrderDetails` (id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -178,17 +181,23 @@ CREATE TABLE `PickupOptions` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `LoadingStatus` (
+    id INTEGER PRIMARY KEY,
+    group_id INTEGER DEFAULT 3 NOT NULL,
     member_id INTEGER NOT NULL,
-    required_bag_count INTEGER NOT NULL,
+    available_bag_count INTEGER DEFAULT 0 NOT NULL,
+    loaded_bag_count INTEGER DEFAULT 0 NOT NULL,
 
+    INDEX USING BTREE (id),
     INDEX USING BTREE(member_id),
-    INDEX USING BTREE(required_bag_count),
 
-    CONSTRAINT PRIMARY KEY (member_id)
-    -- CONSTRAINT FOREIGN KEY (member_id)
-    --     references `GroupMembers` (member_id)
-    --     ON DELETE CASCADE ON UPDATE CASCADE
-
+    CONSTRAINT FOREIGN KEY (id)
+        REFERENCES `OrderDetails` (id),
+    CONSTRAINT FOREIGN KEY (group_id)
+        REFERENCES `Groups` (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (group_id, member_id)
+        REFERENCES `GroupMembers` (group_id, member_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 
 USE eWarehouse;

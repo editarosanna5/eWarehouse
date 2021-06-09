@@ -195,15 +195,20 @@ class PutawayController extends Controller {
         return $final_options;
     }
 
-    public function PutawayMovingUpdate ($device_id, $pallet_id) {
+    public function PutawayMovingUpdate (Request $request) {
+        $device_id = $request->get('device_id');
+        $pallet_id = $request->get('pallet_id');
+
         // verifikasi device id
-        $member_id  = ComponenetCheck::DeviceID($device_id, 2);
+        $member_id  = ComponentCheck::DeviceID($device_id, 2);
 
         if ($member_id != -1) {
             // verifikasi pallet id
             $pallet_id_int = ComponentCheck::PalletID($pallet_id, 2);
 
             if ($pallet_id_int != -1) {
+                // echo "Tes";
+                // return;
                 $final_options = PutawayController::PutawayMovingFetch($member_id, $pallet_id_int);
 
                 if (count($final_options) != 0) {
@@ -213,10 +218,12 @@ class PutawayController extends Controller {
                         SET
                             status_id = 3
                         WHERE
-                            if = $pallet_id_int
+                            id = $pallet_id_int
                     "));
-
-                    echo "Row {$final_option}<br>";
+                    
+                    foreach ($final_options as $final_option) {
+                        echo "Row {$final_option}<br>";
+                    }
                 } else {
                     echo "No available rows.<br>";
                 }
@@ -228,7 +235,10 @@ class PutawayController extends Controller {
         }
     }
 
-    public function PutawayArrivalUpdate ($device_id, $row_id) {
+    public function PutawayArrivalUpdate (Request $request) {
+        $device_id = $request->get('device_id');
+        $row_id = $request->get('row_id');
+
         // verifikasi device id
         $member_id = ComponentCheck::DeviceID($device_id, 2);
 
@@ -238,13 +248,16 @@ class PutawayController extends Controller {
 
             if ($row_id_int != -1) {
                 $temp = DB::select(DB::raw(
-                    "SELECT COUNT(*)
+                    "SELECT pallet_id
                     FROM StorageOptions
                     WHERE
                         row_id = $row_id_int
+                        AND member_id = $member_id
                 "));
 
                 if ($temp != null) {
+                    $pallet_id = $temp[0]->pallet_id;
+                    
                     $row_data = DB::select(DB::raw(
                         "SELECT pallet_count
                         FROM `Rows`
@@ -257,13 +270,16 @@ class PutawayController extends Controller {
                     
                     // data pallet baru
                     $status_id = 4; // update status palet menjadi ON_STORAGE (4)
-                    $column_number = $pallet_count / WarehouseConfig::$StacksPerColumn;
+                    $column_number = $pallet_count / WarehouseConfig::$StacksPerColumn + 1;
                     $stack_number = $pallet_count % WarehouseConfig::$StacksPerColumn;
+                    if ($stack_number == 0) $stack_number += 3;
 
                     DB::update(DB::raw(
                         "UPDATE `Rows`
                         SET
                             pallet_count = $pallet_count
+                        WHERE
+                            id = $row_id_int
                     "));
                     
                     DB::update(DB::raw(
@@ -274,19 +290,20 @@ class PutawayController extends Controller {
                             row_number = $row_id_int,
                             column_number = $column_number,
                             stack_number = $stack_number
+                        WHERE
+                            id = $pallet_id
                     "));
 
                     DB::delete(DB::raw(
                         "DELETE FROM StorageOptions
                         WHERE
                             member_id = $member_id
+                            OR row_id = $row_id_int
                     "));
 
-                    DB::delete(DB::raw(
-                        "DELETE FROM StorageOptions
-                        WHERE
-                            row_id = $row_id_int                            
-                    "));
+                    echo "Item has been stored.<br>";
+                } else {
+                    echo "Row not recommended.<br>";
                 }
             } else {
                 echo "Invalid row ID.<br>";

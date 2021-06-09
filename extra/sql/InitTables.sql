@@ -14,7 +14,7 @@ BEGIN
 
 	-- Daftar Status Palet
 	-- INSERT INTO `PalletStatus` (pallet_status) VALUES ('RESERVED_PALLET_ID');
-	INSERT INTO `PalletStatus` (pallet_status) VALUES ('UNFILLED');
+	INSERT INTO `PalletStatus` (pallet_status) VALUES ('EMPTY');
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('WAITING_TO_BE_STORED');
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('MOVING_TO_STORAGE_ZONE');
 	INSERT INTO `PalletStatus` (pallet_status) VALUES ('ON_STORAGE');
@@ -27,6 +27,7 @@ BEGIN
 	INSERT INTO `Groups` (group_name) VALUES ('CONVEYOR_PACKAGING');
 	INSERT INTO `Groups` (group_name) VALUES ('FORKLIFT_STORING');
 	INSERT INTO `Groups` (group_name) VALUES ('FORKLIFT_PICKING');
+	INSERT INTO `Groups` (group_name) VALUES ('HANDHELD_LOADING');
 	INSERT INTO `Groups` (group_name) VALUES ('CONVEYOR_LOADING');
 
 	-- Daftar Status DO

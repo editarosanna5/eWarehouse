@@ -7,7 +7,7 @@ class ComponentCheck {
     public static function CurrentDate () {
         date_default_timezone_set('Asia/Jakarta');
         
-        return date('Y-m-d');
+        return '"' . date('Y-m-d') . '"';
     }
 
     public static function DeviceID ($device_id, $required_group_id) {
@@ -48,14 +48,14 @@ class ComponentCheck {
             $pallet_id_int = intval($temp[1]);
             
             $temp = DB::select(DB::raw(
-                "SELECT COUNT(*)
+                "SELECT COUNT(*) AS n
                 FROM Pallets
                 WHERE
                     id = $pallet_id_int
                     AND status_id = $required_pallet_status
             "));
             
-            if ($temp != null)
+            if ($temp[0]->n != null)
                 return $pallet_id_int;
             else
                 return -1;
@@ -64,7 +64,7 @@ class ComponentCheck {
 
     public static function MultipleInputsToArray ($input, $toInt) {
         $input = str_replace(' ', '', $input);
-        $temp = explode("','", $temp);
+        $temp = explode("','", $input);
         
         foreach ($temp as &$item) {
             $item = str_replace("'", "", $item);
@@ -74,5 +74,20 @@ class ComponentCheck {
         }
 
         return $temp;
+    }
+
+    public static function OrderID ($order_id, $required_order_status) {       
+        $temp = DB::select(DB::raw(
+            "SELECT COUNT(*) AS n
+            FROM OrderData
+            WHERE
+                id = $order_id
+                AND status_id = $required_order_status
+        "));
+        
+        if ($temp[0]->n != 0)
+            return $order_id;
+        else
+            return -1;
     }
 }

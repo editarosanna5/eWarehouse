@@ -1,0 +1,116 @@
+[
+    {
+        "url" : "http://e-warehouse/receiving",
+        "method" : "GET",
+        "route" : "ReceivingController@ReceivingUpdate",
+        "description" : "menerima dan menyimpan input data produk yang akan dipackage",
+        "input-method" : "web form",
+        "input" : {
+            "po_number" : "1234",
+            "type_id" : "1",
+            "bag_count" : "10",
+            "production_date" : "2021-03-03",
+            "packaging_line" : "2"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/storing",
+        "method" : "PUT",
+        "route" : "StoringController@StoringUpdate",
+        "description" : "menerima id palet dan menyimpan data produksi sesuai id palet dan id devais scanner palet",
+        "input-method" : "qr scanner",
+        "input" : {
+            "device_id" : "1-2",
+            "pallet_id" : "P-0000000012"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/putaway/moving",
+        "method" : "PUT",
+        "route" : "PutawayController@PutawayMovingUpdate",
+        "description" : "mengambil daftar opsi line penyimpanan",
+        "input-method" : "qr scanner",
+        "input" : {
+            "device_id" : "2-1",
+            "pallet_id" : "P-0000000012"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/putaway/arrival",
+        "method" : "PUT",
+        "route" : "PutawayController@PutawayArrivalUpdate",
+        "description" : "update status palet setelah berhasil tersimpan pada line penyimpanan",
+        "input-method" : "qr scanner",
+        "input" : {
+            "device_id" : "2-1",
+            "row_id" : "L-0005"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/picking",
+        "method" : "GET",
+        "route" : "PickingController@PickingUpdate",
+        "description" : "menerima dan menyimpan input data order",
+        "input-method" : "web form",
+        "input" : {
+            "do_number" : "31",
+            "type_id" : "1",
+            "bag_count" : "6",
+            "loading_line" : "1"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/picking/select?order_id=1&device_id=3-1",
+        "method" : "GET",
+        "route" : "PickingController@PickingSelect",
+        "description" : "memilih order yang akan dieksekusi",
+        "input-method" : "interface forklift",
+        "input" : {
+            "order_id" : "1",
+            "device_id" : "3-1"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/picking/moving",
+        "method" : "PUT",
+        "route" : "PickingController@PickingMovingUpdate",
+        "description" : "scanner forklift pengambil membaca qr pada palet",
+        "input-method" : "qr scanner",
+        "input" : {
+            "pallet_id" : "P-0000000012",
+            "device_id" : "3-1"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/picking/arrival",
+        "method" : "PUT",
+        "route" : "PickingController@PickingArrivalUpdate",
+        "description" : "scanner di loading area membaca qr pada palet",
+        "input-method" : "qr scanner",
+        "input" : {
+            "pallet_id" : "P-0000000012",
+            "device_id" : "4-1"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/picking/loading/select",
+        "method" : "PUT",
+        "route" : "PickingController@PickingLoadingSelect",
+        "description" : "memilih palet yang akan diloading",
+        "input-method" : "qr scanner",
+        "input" : {
+            "pallet_id" : "P-0000000012",
+            "device_id" : "4-1"
+        }
+    },
+    {
+        "url" : "http://e-warehouse/picking/loading",
+        "method" : "PUT",
+        "route" : "PickingController@PickingLoadingUpdate",
+        "description" : "menghitung jumlah karung yang sedang loading",
+        "input-method" : "scanner conveyor loading",
+        "input" : {
+            "device_id" : "5-1"
+        }
+    }
+]

@@ -68,6 +68,12 @@ class StoringController extends Controller {
                         id = $pallet_id_int
                 "));
 
+                // delete data dari ProductionData
+                DB::delete(DB::raw(
+                    "DELETE from ProductionData
+                    WHERE member_id = $member_id
+                "));
+
                 echo "Pallet {$pallet_id} updated.<br>";
             } else {
                 echo "Pallet {$pallet_id} invalid or unavailable for storing.<br>";

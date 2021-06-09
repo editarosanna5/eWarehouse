@@ -10,7 +10,7 @@ $router->get('/', function() use ($router) {
 // Router http://e-warehouse/receiving
 $router->group(['prefix' => 'receiving'], function() use ($router) {
     // Router http://e-warehouse/receiving
-    $router->put('', 'ReceivingController@ReceivingUpdate');
+    $router->get('', 'ReceivingController@ReceivingUpdate');
 
     // Router http://e-warehouse/receiving/form
     $router->get('form', function() use ($router) {
@@ -37,14 +37,15 @@ $router->group(['prefix' => 'putaway'], function() use ($router) {
 // Router http://e-warehouse/picking
 $router->group(['prefix' => 'picking'], function() use ($router) {
     // Router http://e-warehouse/picking
-    $router->put('', 'PickingController@PickingUpdate');
+    $router->get('', 'PickingController@PickingUpdate');
 
     // Router http://e-warehouse/picking/form
     $router->get('form', function() use ($router) {
         include 'client/PickingForm.html';
     });
 
-    // Router http://e-warehouse/picking/:order_id
+    // Router http://e-warehouse/picking/select
+    $router->get('select', 'PickingController@PickingSelect');
 
     // Router http://e-warehouse/picking/moving
     $router->put('moving', 'PickingController@PickingMovingUpdate');

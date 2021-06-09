@@ -9,8 +9,10 @@
 			- jumlah karung
             - tanggal produksi
 			- nomor line packing
-    method: put
-		- simpan ke database (sementara)
+
+[ e-warehouse/receiving ]
+    method: get
+		- simpan input form ke database (sementara)
 
 [ e-warehouse/storing ]
 	method: put

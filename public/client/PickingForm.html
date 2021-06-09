@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="author" content="Ronoto">
+		<meta name="description" content="e-warehouse loading page">
+		
+		<link rel="shortcut icon" href="client/components/favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" href="../client/css/Loading.css">
+		
+		<title>Delivery | e-warehouse</title>
+	</head>
+	<body>
+		<div id="nav">
+			<ul>
+				<li><a href="http://e-warehouse">HOME</a></li>
+			</ul>
+		</div>
+
+		<h1>Receiving</h1>
+		<form class="form" action="http://e-warehouse/picking" method="GET">
+			<h3>PRODUCTION DATA</h3>
+			<p>
+				<label for="do_number">PO NUMBER</label>
+				<span><input name="do_number" id="do_number" type="text"></span>
+			</p>
+			<p>
+				<label for="type_id">PRODUCT TYPE</label>
+				<span><input name="type_id" id="type_id" type="text"></span>  
+			</p>
+			<p>
+				<label for="bag_count">BAG COUNT</label>
+				<span><input name="bag_count" id="bag_count" type="text"></span>
+			</p>
+			<p>
+				<label for="loading_line">LOADING LINE</label>
+				<span><input name="loading_line" id="loading_line" type="text"></span>
+			</p>
+			<button onclick="openWin()">SUBMIT</button>
+		</form>
+	</body>
+</html>
