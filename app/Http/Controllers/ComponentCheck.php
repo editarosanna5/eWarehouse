@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 
 class ComponentCheck {
+    public static function CurrentTime () {
+        date_default_timezone_set('Asia/Jakarta');
+        
+        return '"' . date('Y-m-d H:i:s') . '"';
+    }
     public static function CurrentDate () {
         date_default_timezone_set('Asia/Jakarta');
         
@@ -31,7 +36,7 @@ class ComponentCheck {
     }
 
     public static function RowID ($row_id) {
-        if (preg_match('/L-[0-9]{4}/', $row_id)) {
+        if (preg_match('/L-[0-9]{10}/', $row_id)) {
             $temp = explode("-", $row_id);
 
             return intval($temp[1]);

@@ -1,0 +1,126 @@
+Table Types {
+  id int [pk, increment]
+  type_name varchar [not null, unique]
+}
+
+Table PalletStatus {
+  id int [pk, increment]
+  pallet_status varchar [not null, unique]
+}
+
+Table Rows {
+  id int [pk, increment]
+  pallet_count int [not null]
+}
+
+Table Pallets {
+  id int [pk, increment]
+  po_number int [not null]
+  type_id int
+  status_id int [default: 1, not null]
+  bag_count int [default: 0, not null]
+  row_number int
+  column_number int
+  stack_number int
+  production_date date [default: null]
+}
+Ref: Pallets.type_id > Types.id
+Ref: Pallets.status_id > PalletStatus.id
+Ref: Pallets.row_number > Rows.id
+
+Table Groups {
+  id int [pk, increment]
+  group_name varchar [not null, unique]
+}
+
+Table GroupMembers {
+  group_id int [not null]
+  member_id int [not null]
+  
+  Indexes {
+    (group_id, member_id) [pk]
+  }
+}
+Ref: GroupMembers.group_id > Groups.id
+
+Table ProductionData {
+  group_id int [default: 1, not null]
+  member_id int [pk]
+  po_number int [not null]
+  type_id int [not null]
+  bag_count int [not null]
+  production_date date [not null]
+}
+Ref: ProductionData.group_id > Groups.id
+Ref: ProductionData.(group_id, member_id) - GroupMembers.(group_id, member_id)
+
+Table OrderStatus {
+  id int [pk, increment]
+  order_status varchar [not null, unique]
+}
+
+Table OrderData {
+  id int [pk, increment]
+  group_id int [default: 4, not null]
+  member_id int [not null]
+  do_number int [not null]
+  order_date date [not null]
+  status_id int [default:1, not null]
+}
+Ref: OrderData.status_id > OrderStatus.id
+Ref: OrderData.(group_id, member_id) > GroupMembers.(group_id, member_id)
+
+Table OrderDetails {
+  id int [pk, increment]
+  order_id int [not null]
+  type_id int [not null]
+  quantity int [not null]
+}
+Ref: OrderDetails.order_id > OrderData.id
+Ref: OrderDetails.type_id > Types.id
+
+Table DeliveryDetails {
+  id int [pk, increment]
+  order_id int [not null]
+  pallet_id int [not null]
+  type_id int [not null]
+  bag_count int [default: 0, not null]
+  production_date date [not null]
+}
+Ref: DeliveryDetails.order_id > OrderData.id
+Ref: DeliveryDetails.pallet_id > Pallets.id
+Ref: DeliveryDetails.type_id > Types.id
+
+Table StorageOptions {
+  group_id int [default: 2, not null]
+  member_id int [not null]
+  row_id int [not null]
+  pallet_id int [not null]
+  
+  Indexes {
+    (member_id, row_id) [pk]
+  }
+}
+Ref: StorageOptions.row_id > Rows.id
+Ref: StorageOptions.pallet_id > Pallets.id
+Ref: StorageOptions.(group_id, member_id) > GroupMembers.(group_id, member_id)
+
+Table PickupOptions {
+  id int [not null]
+  pallet_id int [not null]
+  
+  Indexes {
+    (id, pallet_id) [pk]
+  }
+}
+Ref: PickupOptions.id > OrderDetails.id
+Ref: PickupOptions.pallet_id > Pallets.id
+
+Table LoadingStatus {
+  id int [pk]
+  group_id int [default: 3, not null]
+  member_id int [not null]
+  available_bag_count int [not null]
+}
+Ref: LoadingStatus.id - OrderDetails.id
+Ref: LoadingStatus.(group_id, member_id) > GroupMembers.(group_id, member_id)

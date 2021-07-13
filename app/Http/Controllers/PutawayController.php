@@ -221,17 +221,18 @@ class PutawayController extends Controller {
                             id = $pallet_id_int
                     "));
                     
-                    foreach ($final_options as $final_option) {
-                        echo "Row {$final_option}<br>";
-                    }
+                    return ComponentCheck::CurrentTime();
                 } else {
                     echo "No available rows.<br>";
+                    return ComponentCheck::CurrentTime();
                 }
             } else {
                 echo "Pallet {$pallet_id} invalid or unavailable for put away.<br>";
+                return ComponentCheck::CurrentTime();
             }
         } else {
             echo "Unauthorized device.<br>";
+            return ComponentCheck::CurrentTime();
         }
     }
 
@@ -302,14 +303,170 @@ class PutawayController extends Controller {
                     "));
 
                     echo "Item has been stored.<br>";
+                    return ComponentCheck::CurrentTime();
                 } else {
                     echo "Row not recommended.<br>";
+                    return ComponentCheck::CurrentTime();
                 }
             } else {
                 echo "Invalid row ID.<br>";
+                return ComponentCheck::CurrentTime();
             }
         } else {
             echo "Unauthorized device.<br>";
+            return ComponentCheck::CurrentTime();
         }
+    }
+
+    public function PutawayMap () {
+        echo '<html>';
+            echo '<head>';
+                echo '<meta charset="utf-8">';
+                echo '<meta name="author" content="Ronoto">';
+                echo '<meta name="description" content="e-warehouse warehouse map">';
+                echo '<title>Storage | e-Warehouse</title>';
+                echo '<meta http-equiv="refresh" content="5">';
+                echo '<link rel="shortcut icon" href="../client/components/favicon.ico" type="image/x-icon">';
+                echo '<link rel="stylesheet" href="../client/css/Loading.css">';
+                echo '<script src="../client/components/anychart-installation-package-8.10.0/js/anychart-core.min.js"></script>';
+                echo '<script src="../client/components/anychart-installation-package-8.10.0/js/anychart-heatmap.min.js"></script>';
+                echo '<style>';
+                    echo '#group1, #group2, #group3 {';
+                    echo 'height: 78%;';
+                    echo '}';
+                    echo '#group1 {';
+                    echo 'width:27%;';
+                    echo 'margin-top:16%;';
+                    echo 'margin-left:25%;';
+                    echo 'float:left;';
+                    echo '}';
+                    echo '#group2, #group3 {';
+                    echo 'width:30.5%;';
+                    echo 'margin-right:10%;';
+                    echo 'float:right;';
+                    echo '}';
+                    echo '#group3 {';
+                    echo 'margin-top:1%;';
+                    echo '}';
+                    
+                    echo '.map {';
+                    echo 'height: 420px;';
+                    echo 'width:100%;';
+                    echo 'margin-top:20px;';
+                    echo 'overflow-y: auto;';
+                    echo 'border: 1px solid #969696;';
+                    echo '}';
+                echo '</style>';
+            echo '</head>';
+            echo '<body>';
+                echo '<div id="nav">';
+                    echo '<ul>';
+                        echo '<li><a href="http://e-warehouse">HOME</a></li>';
+                        echo '<li><a href="http://e-warehouse/warehouse">STORAGE</a></li>';
+                    echo '</ul>';
+                echo '</div>';
+                    
+                    echo '<h1>Putaway</h1>';
+                    
+                echo '<div class="map">';
+                    echo '<div id="group1"></div>';
+                    echo '<div id="group2"></div>';
+                    echo '<div id="group3"></div>';
+                echo '</div>';
+                
+                $group1_min = 1;
+                $group1_max = 6;
+                $group2_min = 7;
+                $group2_max = 13;
+                $group3_min = 14;
+                $group3_max = 20;
+
+                for ($i = 1; $i <= 20; $i++) {
+                    $map[$i] = array_fill(1,7,0);
+                }
+
+                $queries = DB::select(DB::raw(
+                    "SELECT
+                        StorageOptions.row_id AS row_id,
+                        Rows.pallet_count AS pallet_count
+                    FROM StorageOptions JOIN `Rows`
+                        ON StorageOptions.row_id = Rows.id
+                "));
+
+                foreach ($queries as $query) {
+                    $i = $query->row_id;
+                    $j = ceil($query->pallet_count);
+                    if ($j % 3 == 0) {
+                        $j++;
+                    }
+                    $map[$i][$j] = 1;
+                }
+
+                echo '<script>';
+                    echo 'anychart.onDocumentReady(function () {';
+                        // create the data
+                        echo 'var data1 = [';
+                        for ($i=$group1_min; $i<=$group1_max; $i++) {
+                            for ($j=1; $j<=7; $j++) {
+                                echo '{ x: "L-000' . $i . '", y: "' . $j . '", heat: ' . $map[$i][$j] . ' },';
+                            }
+                        }
+                        echo '];';
+
+                        echo 'var data2 = [';
+                        for ($i=$group2_min; $i<=$group2_max; $i++) {
+                            for ($j=1; $j<=7; $j++) {
+                                echo '{ x: "L-000' . $i . '", y: "' . $j . '", heat: ' . $map[$i][$j] . ' },';
+                            }
+                        }
+                        echo '];';
+
+                        echo 'var data3 = [';
+                        for ($i=$group3_min; $i<=$group3_max; $i++) {
+                            for ($j=1; $j<=7; $j++) {
+                                echo '{ x: "L-000' . $i . '", y: "' . $j . '", heat: ' . $map[$i][$j] . ' },';
+                            }
+                        }
+                        echo '];';
+                        
+                        // create and configure the color scale.
+                        echo 'var customColorScale = anychart.scales.ordinalColor();';
+                        echo 'customColorScale.ranges([';
+                            echo '{ less: 0.99, name: \'Not available\', color: \'LightBlue\' },';
+                            echo '{ greater: 0.99, name: \'Available\', color: \'Gold\' },';
+                        echo ']);';
+                        
+                        // create the chart and set the data
+                        echo 'map1 = anychart.heatMap(data1);';
+                        echo 'map2 = anychart.heatMap(data2);';
+                        echo 'map3 = anychart.heatMap(data3);';
+                        
+                        // set the color scale as the color scale of the chart
+                        echo 'map1.colorScale(customColorScale);';
+                        echo 'map2.colorScale(customColorScale);';
+                        echo 'map3.colorScale(customColorScale);';
+
+                        // labels settings
+                        echo 'var labels1 = map1.labels();';
+                        echo 'var labels2 = map2.labels();';
+                        echo 'var labels3 = map3.labels();';
+                        // enable labels
+                        echo 'labels1.enabled(false);';
+                        echo 'labels2.enabled(false);';
+                        echo 'labels3.enabled(false);';
+                        
+                        // set the container id
+                        echo 'map1.container("group1");';
+                        echo 'map2.container("group2");';
+                        echo 'map3.container("group3");';
+                        
+                        // initiate drawing the chart
+                        echo 'map1.draw();';
+                        echo 'map2.draw();';
+                        echo 'map3.draw();';
+                    echo '});';
+                echo '</script>';
+            echo '</body>';
+        echo '</html>';
     }
 }

@@ -21,6 +21,7 @@ class StoringController extends Controller {
             $pallet_to_store = "P-" . str_pad($pallet_to_store, 10, "0", STR_PAD_LEFT);
             echo "{$pallet_to_store}<br>";
         }
+        return ComponentCheck::CurrentTime();
     }
 
     // update status palet yang siap disimpan
@@ -75,11 +76,14 @@ class StoringController extends Controller {
                 "));
 
                 echo "Pallet {$pallet_id} updated.<br>";
+                return ComponentCheck::CurrentTime();
             } else {
                 echo "Pallet {$pallet_id} invalid or unavailable for storing.<br>";
+                return ComponentCheck::CurrentTime();
             }
         } else {
             echo "Unauthorized device.<br>";
+            return ComponentCheck::CurrentTime();
         }
     }
 }

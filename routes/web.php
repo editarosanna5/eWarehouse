@@ -5,7 +5,8 @@ $router->get('/', function() use ($router) {
     include 'client/Home.html';
 });
 
-// Router http://e-warehouse/login
+// Router http://e-warehouse/warehouse
+$router->get('/warehouse', 'StorageController@StorageFetch');
 
 // Router http://e-warehouse/receiving
 $router->group(['prefix' => 'receiving'], function() use ($router) {
@@ -27,8 +28,10 @@ $router->group(['prefix' => 'storing'], function() use ($router) {
 // Router http://e-warehouse/putaway
 $router->group(['prefix' => 'putaway'], function() use ($router) {
     // Router http://e-warehouse/putaway/moving
-    $router->get('moving', 'PutawayController@PutawayMovingFetch');
+    // $router->get('moving', 'PutawayController@PutawayMovingFetch');
     $router->put('moving', 'PutawayController@PutawayMovingUpdate');
+    // Router http://e-warehouse/putaway/map
+    $router->get('map', 'PutawayController@PutawayMap');
 
     // Router http://e-warehouse/putaway/arrival
     $router->put('arrival', 'PutawayController@PutawayArrivalUpdate');
@@ -58,4 +61,10 @@ $router->group(['prefix' => 'picking'], function() use ($router) {
 
     // Router http://e-warehouse/picking/bag
     $router->put('bag', 'PickingController@PickingBagUpdate');
+
+    // Router http://e-warehouse/picking/list
+    $router->get('list', 'PickingController@PickingList');
+
+    // Router http://e-warehouse/picking/map
+    $router->get('map', 'PickingController@PickingMap');
 });

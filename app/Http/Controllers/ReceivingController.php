@@ -41,8 +41,10 @@ class ReceivingController extends Controller {
             "));
 
             echo "Production data stored.<br>";
+            return ComponentCheck::CurrentTime();
         } else
             // terdapat aktivitas di packaging line
             echo "Line {$packaging_line} busy.<br>";
+            return ComponentCheck::CurrentTime();
     }
 }

@@ -171,6 +171,7 @@ class PickingController extends Controller {
         }
 
         echo "Order successfully recorded.";
+        return ComponentCheck::CurrentTime();
     }
 
     // memilih order yang akan dieksekusi
@@ -209,8 +210,10 @@ class PickingController extends Controller {
             }
 
             echo "Order successfully taken.";
+            return ComponentCheck::CurrentTime();
         } else {
             echo "Order busy.";
+            return ComponentCheck::CurrentTime();
         }        
     }
 
@@ -242,12 +245,15 @@ class PickingController extends Controller {
 
                 if ($count > 0) {
                     echo "Row available for pickup. {$count} matches found.";
+                    return ComponentCheck::CurrentTime();
                 } else {
                     echo "Row unavailable for pickup.";
+                    return ComponentCheck::CurrentTime();
                 }
             }
         } else {
             echo "Unauthorized device.";
+            return ComponentCheck::CurrentTime();
         }
     }
 
@@ -324,14 +330,18 @@ class PickingController extends Controller {
                     "));
 
                     echo "Pallet successfully taken. Moving to loading zone.";
+                    return ComponentCheck::CurrentTime();
                 } else {
                     echo "Pallet not in option.";
+                    return ComponentCheck::CurrentTime();
                 }
             } else {
                 echo "Invalid pallet ID.";
+                return ComponentCheck::CurrentTime();
             }
         } else {
             echo "Unauthorized device.";
+            return ComponentCheck::CurrentTime();
         }
     }
 
@@ -346,6 +356,7 @@ class PickingController extends Controller {
         "));
 
         echo "Pallet arrived at loading zone. Waiting to be loaded.";
+        return ComponentCheck::CurrentTime();
     }
     
     // update status palet menjadi LOADING
@@ -397,6 +408,7 @@ class PickingController extends Controller {
         "));
 
         echo "Loading pallet {$pallet_id_int}.<br>";
+        return ComponentCheck::CurrentTime();
     }
 
     // handheld scanner loading zone
@@ -428,10 +440,12 @@ class PickingController extends Controller {
 
                 } else {
                     echo "Pallet unavailable for this operation.";
+                    return ComponentCheck::CurrentTime();
                 }
             }
         } else {
             echo "Unauthorized device.";
+            return ComponentCheck::CurrentTime();
         }
     }
 
@@ -441,74 +455,300 @@ class PickingController extends Controller {
         $member_id = ComponentCheck::DeviceID($device_id, 5);
 
         if ($member_id != -1) {
-            $temp = DB::select(DB:raw(
+            $temp = DB::select(DB::raw(
                 "SELECT
                     Pallets.id AS pallet_id,
-                    OrderDetails.id AS order_detail_id
+                    OrderDetails.id AS order_detail_id,
+                    OrderDetails.quantity AS required_bag_count
                 FROM Pallets
                     JOIN OrderDetails
                         ON Pallets.type_id = OrderDetails.type_id
                     JOIN OrderData
-                        ON OrderDetails.order_id = OrderData
+                        ON OrderDetails.order_id = OrderData.id
                 WHERE
                     OrderData.member_id = $member_id
                     AND OrderData.status_id = 2
                     AND Pallets.status_id = 7
             "));
 
-            $pallet_id = $temp[0]->pallet_id;
-            $order_detail_id = $temp[0]->order_detail_id;
+            if ($temp == null) {
+                echo "Pallet unavailable for this operation";
+                return ComponentCheck::CurrentTime();
+            } else {
+                $pallet_id = $temp[0]->pallet_id;
+                $order_detail_id = $temp[0]->order_detail_id;
+                $required_bag_count = $temp[0]->required_bag_count;
 
-            // periksa jumlah karung tersisa pada palet
-            $temp = DB::select(DB::raw(
-                "SELECT pallet_bag_count
-                FROM Pallets
-                WHERE
-                    id = $pallet_id
-            "));
-
-            $pallet_bag_count = $temp[0]->pallet_bag_count;
-
-            if ($pallet_bag_count == 1) {   // sisa karung = 1
-                // update data pallet
-                    // bag_count =- 1 (= 0)
-                    // status_id = 1 (EMPTY)
+                // update status loading
                 DB::update(DB::raw(
-                    "UPDATE Pallets
+                    "UPDATE LoadingStatus
                     SET
-                        po_number = NULL,
-                        type_id = NULL,
-                        status_id = 1,
-                        bag_count = bag_count - 1,
-                        production_date = NULL
+                        loaded_bag_count = loaded_bag_count + 1
                 "));
-            } else {    // sisa karung > 1
+
                 // periksa jumlah loaded_bag_count
                 $temp = DB::select(DB::raw(
                     "SELECT loaded_bag_count
                     FROM LoadingStatus
                     WHERE
-                        
+                        id = $order_detail_id
                 "));
-            }
-            
-            // update jumlah karung tersisa pada pallet
-            DB::update(DB::raw(
-                "UPDATE Pallets
-                SET
-                    
-                WHERE
-                    id = $pallet_id
-            "));
+                
+                $loaded_bag_count = $temp[0]->loaded_bag_count;
 
-            // loaded_bag_count terpenuhi
-            //     pallet kosong
-            //     pallet belum kosong
-            // loaded_bag_count belum terpenuhi
-            //     pallet kosong
-            //     pallet belum kosong
+                // periksa jumlah karung tersisa pada palet
+                $temp = DB::select(DB::raw(
+                    "SELECT bag_count
+                    FROM Pallets
+                    WHERE
+                        id = $pallet_id
+                "));
+
+                $pallet_bag_count = $temp[0]->bag_count;
+
+                if ($pallet_bag_count == 1) {   // sisa karung = 1
+                    // update data pallet
+                        // bag_count =- 1 (= 0)
+                        // status_id = 1 (EMPTY)
+                    DB::update(DB::raw(
+                        "UPDATE Pallets
+                        SET
+                            po_number = NULL,
+                            type_id = NULL,
+                            status_id = 1,
+                            bag_count = bag_count - 1,
+                            production_date = NULL
+                        WHERE
+                            id = $pallet_id
+                    "));
+                } else {    // sisa karung > 1
+                    // loaded_bag_count terpenuhi
+                    if ($loaded_bag_count == $required_bag_count) {
+                        DB::update(DB::raw(
+                            "UPDATE Pallets
+                            SET
+                                status_id = 8,
+                                bag_count = bag_count - 1
+                            WHERE
+                                id = $pallet_id
+                        "));
+                    } else {
+                        DB::update(DB::raw(
+                            "UPDATE Pallets
+                            SET
+                                bag_count = bag_count - 1
+                            WHERE
+                                id = $pallet_id
+                        "));
+                    }
+                }
+                echo "Bag successfully loaded.";
+                return ComponentCheck::CurrentTime();
+            }
         } else {
             echo "Unauthorized device.";
+            return ComponentCheck::CurrentTime();
         }
+    }
+
+    public function PickingList () {
+        echo '<html>';
+            echo '<head>';
+                echo '<meta charset="utf-8">';
+                echo '<meta name="author" content="Ronoto">';
+                echo '<meta name="description" content="e-warehouse loading page">';
+                
+                echo '<link rel="shortcut icon" href="../client/components/favicon.ico" type="image/x-icon">';
+                echo '<link rel="stylesheet" href="../client/css/Loading.css">';
+                
+                echo '<title>Loading | e-warehouse</title>';
+                
+                echo '<style>';
+                    echo '.items {';
+                        echo 'margin: 50px 30px 0;';
+                        echo 'border: 1px solid #696969;';
+                        echo 'height: 108px;';
+                        echo 'width: 350px;';
+                    echo '}';
+                echo '</style>';
+            echo '</head>';
+            echo '<body>';
+                echo '<div id="nav">';
+                    echo '<ul>';
+                        echo '<li><a href="http://e-warehouse">HOME</a></li>';
+                        echo '<li><a href="http://e-warehouse/warehouse">STORAGE</a></li>';
+                    echo '</ul>';
+                echo '</div>';
+                
+                echo '<h1>PICKING LIST</h1>';
+                echo '<br>';
+
+                $queries = DB::select(DB::raw(
+                    "SELECT
+                        id,
+                        do_number,
+                        order_date
+                    FROM OrderData
+                "));
+
+                foreach ($queries as $query) {
+                    echo '<div class="items">';
+                        echo 'DO Number: ' . $query->do_number . '<br><br>';
+                        echo 'Date issued: ' . $query->order_date . '<br>';
+                        echo '<button onclick="location.href=\'http://e-warehouse/picking/select?order_id=' . $query->id . '&device_id=3-1\';">PICKUP</button>';
+                    echo '</div>';
+                }
+            echo '</body>';
+        echo '</html>';
+    }
+
+    public function PickingMap () {
+        echo '<html>';
+            echo '<head>';
+                echo '<meta charset="utf-8">';
+                echo '<meta name="author" content="Ronoto">';
+                echo '<meta name="description" content="e-warehouse warehouse map">';
+                echo '<title>Pickup | e-Warehouse</title>';
+                // echo '<meta http-equiv="refresh" content="5">';
+                echo '<link rel="shortcut icon" href="../client/components/favicon.ico" type="image/x-icon">';
+                echo '<link rel="stylesheet" href="../client/css/Loading.css">';
+                echo '<script src="../client/components/anychart-installation-package-8.10.0/js/anychart-core.min.js"></script>';
+                echo '<script src="../client/components/anychart-installation-package-8.10.0/js/anychart-heatmap.min.js"></script>';
+                echo '<style>';
+                    echo '#group1, #group2, #group3 {';
+                    echo 'height: 78%;';
+                    echo '}';
+                    echo '#group1 {';
+                    echo 'width:27%;';
+                    echo 'margin-top:16%;';
+                    echo 'margin-left:25%;';
+                    echo 'float:left;';
+                    echo '}';
+                    echo '#group2, #group3 {';
+                    echo 'width:30.5%;';
+                    echo 'margin-right:10%;';
+                    echo 'float:right;';
+                    echo '}';
+                    echo '#group3 {';
+                    echo 'margin-top:1%;';
+                    echo '}';
+                    
+                    echo '.map {';
+                    echo 'height: 420px;';
+                    echo 'width:100%;';
+                    echo 'margin-top:20px;';
+                    echo 'overflow-y: auto;';
+                    echo 'border: 1px solid #969696;';
+                    echo '}';
+                echo '</style>';
+            echo '</head>';
+            echo '<body>';
+                echo '<div id="nav">';
+                    echo '<ul>';
+                        echo '<li><a href="http://e-warehouse">HOME</a></li>';
+                        echo '<li><a href="http://e-warehouse/warehouse">STORAGE</a></li>';
+                    echo '</ul>';
+                echo '</div>';
+                    
+                    echo '<h1>PUTAWAY</h1>';
+                    
+                echo '<div class="map">';
+                    echo '<div id="group1"></div>';
+                    echo '<div id="group2"></div>';
+                    echo '<div id="group3"></div>';
+                echo '</div>';
+                
+                $group1_min = 1;
+                $group1_max = 6;
+                $group2_min = 7;
+                $group2_max = 13;
+                $group3_min = 14;
+                $group3_max = 20;
+
+                for ($i = 1; $i <= 20; $i++) {
+                    $map[$i] = array_fill(1,7,0);
+                }
+
+                $queries = DB::select(DB::raw(
+                    "SELECT
+                        Pallets.row_number AS row_number,
+                        Pallets.column_number AS column_number
+                    FROM Pallets JOIN PickupOptions
+                        ON Pallets.id = PickupOptions.pallet_id
+                "));
+
+                foreach ($queries as $query) {
+                    $i = $query->row_number;
+                    $j = $query->column_number;
+
+                    $map[$i][$j] = 1;
+                }
+
+                echo '<script>';
+                    echo 'anychart.onDocumentReady(function () {';
+                        // create the data
+                        echo 'var data1 = [';
+                        for ($i=$group1_min; $i<=$group1_max; $i++) {
+                            for ($j=1; $j<=7; $j++) {
+                                echo '{ x: "L-000' . $i . '", y: "' . $j . '", heat: ' . $map[$i][$j] . ' },';
+                            }
+                        }
+                        echo '];';
+
+                        echo 'var data2 = [';
+                        for ($i=$group2_min; $i<=$group2_max; $i++) {
+                            for ($j=1; $j<=7; $j++) {
+                                echo '{ x: "L-000' . $i . '", y: "' . $j . '", heat: ' . $map[$i][$j] . ' },';
+                            }
+                        }
+                        echo '];';
+
+                        echo 'var data3 = [';
+                        for ($i=$group3_min; $i<=$group3_max; $i++) {
+                            for ($j=1; $j<=7; $j++) {
+                                echo '{ x: "L-000' . $i . '", y: "' . $j . '", heat: ' . $map[$i][$j] . ' },';
+                            }
+                        }
+                        echo '];';
+                        
+                        // create and configure the color scale.
+                        echo 'var customColorScale = anychart.scales.ordinalColor();';
+                        echo 'customColorScale.ranges([';
+                            echo '{ less: 0.99, name: \'Not available\', color: \'LightBlue\' },';
+                            echo '{ greater: 0.99, name: \'Available\', color: \'Gold\' },';
+                        echo ']);';
+                        
+                        // create the chart and set the data
+                        echo 'map1 = anychart.heatMap(data1);';
+                        echo 'map2 = anychart.heatMap(data2);';
+                        echo 'map3 = anychart.heatMap(data3);';
+                        
+                        // set the color scale as the color scale of the chart
+                        echo 'map1.colorScale(customColorScale);';
+                        echo 'map2.colorScale(customColorScale);';
+                        echo 'map3.colorScale(customColorScale);';
+
+                        // labels settings
+                        echo 'var labels1 = map1.labels();';
+                        echo 'var labels2 = map2.labels();';
+                        echo 'var labels3 = map3.labels();';
+                        // enable labels
+                        echo 'labels1.enabled(false);';
+                        echo 'labels2.enabled(false);';
+                        echo 'labels3.enabled(false);';
+                        
+                        // set the container id
+                        echo 'map1.container("group1");';
+                        echo 'map2.container("group2");';
+                        echo 'map3.container("group3");';
+                        
+                        // initiate drawing the chart
+                        echo 'map1.draw();';
+                        echo 'map2.draw();';
+                        echo 'map3.draw();';
+                    echo '});';
+                echo '</script>';
+            echo '</body>';
+        echo '</html>';
     }
 }
