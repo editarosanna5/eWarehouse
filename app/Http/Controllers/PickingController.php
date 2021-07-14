@@ -557,11 +557,11 @@ class PickingController extends Controller {
                 echo '<meta charset="utf-8">';
                 echo '<meta name="author" content="Ronoto">';
                 echo '<meta name="description" content="e-warehouse loading page">';
-                
+                echo '<meta http-equiv="refresh" content="5">';
                 echo '<link rel="shortcut icon" href="../client/components/favicon.ico" type="image/x-icon">';
                 echo '<link rel="stylesheet" href="../client/css/Loading.css">';
                 
-                echo '<title>Loading | e-warehouse</title>';
+                echo '<title>Picking List | e-warehouse</title>';
                 
                 echo '<style>';
                     echo '.items {';
@@ -608,8 +608,8 @@ class PickingController extends Controller {
                 echo '<meta charset="utf-8">';
                 echo '<meta name="author" content="Ronoto">';
                 echo '<meta name="description" content="e-warehouse warehouse map">';
-                echo '<title>Pickup | e-Warehouse</title>';
-                // echo '<meta http-equiv="refresh" content="5">';
+                echo '<title>Picking Map | e-Warehouse</title>';
+                echo '<meta http-equiv="refresh" content="5">';
                 echo '<link rel="shortcut icon" href="../client/components/favicon.ico" type="image/x-icon">';
                 echo '<link rel="stylesheet" href="../client/css/Loading.css">';
                 echo '<script src="../client/components/anychart-installation-package-8.10.0/js/anychart-core.min.js"></script>';
@@ -650,7 +650,7 @@ class PickingController extends Controller {
                     echo '</ul>';
                 echo '</div>';
                     
-                    echo '<h1>PUTAWAY</h1>';
+                    echo '<h1>PICKING MAP</h1>';
                     
                 echo '<div class="map">';
                     echo '<div id="group1"></div>';

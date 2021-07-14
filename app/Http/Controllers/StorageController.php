@@ -71,7 +71,7 @@ class StorageController extends Controller {
                     echo '</ul>';
                 echo '</div>';
                     
-                    echo '<h1>Warehouse</h1>';
+                    echo '<h1>STORAGE</h1>';
                     
                 echo '<div class="map">';
                     echo '<div id="group1"></div>';
