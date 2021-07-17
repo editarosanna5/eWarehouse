@@ -208,13 +208,12 @@ class PickingController extends Controller {
                     )
                 "));
             }
-
-            echo "Order successfully taken.";
-            return ComponentCheck::CurrentTime();
-        } else {
-            echo "Order busy.";
-            return ComponentCheck::CurrentTime();
-        }        
+            header("Location: http://e-warehouse/picking/map");
+            die();
+        } else {           
+            header("Location: http://e-warehouse/picking/list");
+            die();
+        }
     }
 
     // verifikasi row id
@@ -558,44 +557,47 @@ class PickingController extends Controller {
                 echo '<meta name="author" content="Ronoto">';
                 echo '<meta name="description" content="e-warehouse loading page">';
                 echo '<meta http-equiv="refresh" content="5">';
-                echo '<link rel="shortcut icon" href="../client/components/favicon.ico" type="image/x-icon">';
-                echo '<link rel="stylesheet" href="../client/css/Loading.css">';
+                echo '<link rel="shortcut icon" href="http://e-warehouse/client/components/favicon.ico" type="image/x-icon">';
+                echo '<link rel="stylesheet" href="http://e-warehouse/client/css/style.css">';
                 
                 echo '<title>Picking List | e-warehouse</title>';
-                
-                echo '<style>';
-                    echo '.items {';
-                        echo 'margin: 50px 30px 0;';
-                        echo 'border: 1px solid #696969;';
-                        echo 'height: 108px;';
-                        echo 'width: 350px;';
-                    echo '}';
-                echo '</style>';
             echo '</head>';
             echo '<body>';
                 echo '<div id="nav">';
-                    echo '<ul>';
+                    echo '<ul class="content">';
                         echo '<li><a href="http://e-warehouse">HOME</a></li>';
                         echo '<li><a href="http://e-warehouse/warehouse">STORAGE</a></li>';
                     echo '</ul>';
                 echo '</div>';
                 
-                echo '<h1>PICKING LIST</h1>';
+                echo '<h1 class="content">PICKING LIST</h1>';
                 echo '<br>';
 
                 $queries = DB::select(DB::raw(
                     "SELECT
                         id,
                         do_number,
-                        order_date
+                        order_date,
+                        status_id
                     FROM OrderData
+                    WHERE
+                        status_id = 1
                 "));
 
                 foreach ($queries as $query) {
                     echo '<div class="items">';
                         echo 'DO Number: ' . $query->do_number . '<br><br>';
                         echo 'Date issued: ' . $query->order_date . '<br>';
-                        echo '<button onclick="location.href=\'http://e-warehouse/picking/select?order_id=' . $query->id . '&device_id=3-1\';">PICKUP</button>';
+                        if ($query->status_id == 1) {
+                            echo '<button onclick="location.href=\'http://e-warehouse/picking/select?order_id=' . $query->id . '&device_id=3-1\';">PICKUP</button>';   
+                        } else {
+                            echo '<button onclick="myFunction()">PICKUP</button>';
+                            echo '<script>';
+                                echo 'function myFunction() {';
+                                    echo 'alert("Order busy.");';
+                                echo '}';
+                            echo '</script>';
+                        }                        
                     echo '</div>';
                 }
             echo '</body>';
@@ -610,47 +612,20 @@ class PickingController extends Controller {
                 echo '<meta name="description" content="e-warehouse warehouse map">';
                 echo '<title>Picking Map | e-Warehouse</title>';
                 echo '<meta http-equiv="refresh" content="5">';
-                echo '<link rel="shortcut icon" href="../client/components/favicon.ico" type="image/x-icon">';
-                echo '<link rel="stylesheet" href="../client/css/Loading.css">';
-                echo '<script src="../client/components/anychart-installation-package-8.10.0/js/anychart-core.min.js"></script>';
-                echo '<script src="../client/components/anychart-installation-package-8.10.0/js/anychart-heatmap.min.js"></script>';
-                echo '<style>';
-                    echo '#group1, #group2, #group3 {';
-                    echo 'height: 78%;';
-                    echo '}';
-                    echo '#group1 {';
-                    echo 'width:27%;';
-                    echo 'margin-top:16%;';
-                    echo 'margin-left:25%;';
-                    echo 'float:left;';
-                    echo '}';
-                    echo '#group2, #group3 {';
-                    echo 'width:30.5%;';
-                    echo 'margin-right:10%;';
-                    echo 'float:right;';
-                    echo '}';
-                    echo '#group3 {';
-                    echo 'margin-top:1%;';
-                    echo '}';
-                    
-                    echo '.map {';
-                    echo 'height: 420px;';
-                    echo 'width:100%;';
-                    echo 'margin-top:20px;';
-                    echo 'overflow-y: auto;';
-                    echo 'border: 1px solid #969696;';
-                    echo '}';
-                echo '</style>';
+                echo '<link rel="shortcut icon" href="http://e-warehouse/client/components/favicon.ico" type="image/x-icon">';
+                echo '<link rel="stylesheet" href="http://e-warehouse/client/css/style.css">';
+                echo '<script src="http://e-warehouse/client/components/anychart-installation-package-8.10.0/js/anychart-core.min.js"></script>';
+                echo '<script src="http://e-warehouse/client/components/anychart-installation-package-8.10.0/js/anychart-heatmap.min.js"></script>';
             echo '</head>';
             echo '<body>';
                 echo '<div id="nav">';
-                    echo '<ul>';
+                    echo '<ul class="content">';
                         echo '<li><a href="http://e-warehouse">HOME</a></li>';
                         echo '<li><a href="http://e-warehouse/warehouse">STORAGE</a></li>';
                     echo '</ul>';
                 echo '</div>';
                     
-                    echo '<h1>PICKING MAP</h1>';
+                    echo '<h1 class="content">PICKING MAP</h1>';
                     
                 echo '<div class="map">';
                     echo '<div id="group1"></div>';

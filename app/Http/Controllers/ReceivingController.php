@@ -21,30 +21,45 @@ class ReceivingController extends Controller {
                 member_id = $packaging_line
         "));
 
-        if ($temp[0]->foundcount == null) {
-            // tidak ada aktivitas di packaging line
-            DB::insert(DB::raw(
-                "INSERT INTO ProductionData (
-                    member_id,
-                    po_number,
-                    type_id,
-                    bag_count,
-                    production_date
-                )
-                VALUES (
-                    $packaging_line,
-                    $po_number,
-                    $type_id,
-                    $bag_count,
-                    $production_date
-                )
-            "));
+        echo '<html>';
+            echo '<head>';
+                echo '<meta charset="utf-8">';
+                echo '<meta name="author" content="Ronoto">';
+                echo '<meta name="description" content="e-warehouse loading page">';
+                echo '<meta http-equiv="refresh" content="3; url=http://e-warehouse/receiving/form" />';
+                
+                echo '<link rel="shortcut icon" href="http://e-warehouse/client/components/favicon.ico" type="image/x-icon">';
+                echo '<link rel="stylesheet" href="http://e-warehouse/client/css/style.css">';
+                
+                echo '<title>Packaging | e-warehouse</title>';
+            echo '</head>';
+            echo '<body>';        
+                if ($temp[0]->foundcount == null) {
+                    // tidak ada aktivitas di packaging line
+                    DB::insert(DB::raw(
+                        "INSERT INTO ProductionData (
+                            member_id,
+                            po_number,
+                            type_id,
+                            bag_count,
+                            production_date
+                        )
+                        VALUES (
+                            $packaging_line,
+                            $po_number,
+                            $type_id,
+                            $bag_count,
+                            $production_date
+                        )
+                    "));
+                    // tidak terdapat aktivitas di packaging line
+                    echo '<p>Production data stored</p>';            
 
-            echo "Production data stored.<br>";
-            return ComponentCheck::CurrentTime();
-        } else
-            // terdapat aktivitas di packaging line
-            echo "Line {$packaging_line} busy.<br>";
-            return ComponentCheck::CurrentTime();
+                } else {
+                    // terdapat aktivitas di packaging line
+                    echo '<p>Line ' . $packaging_line . ' is busy.</p>';
+                }                
+            echo '</body>';
+        echo '</html>';
     }
 }

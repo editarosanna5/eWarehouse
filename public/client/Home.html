@@ -5,23 +5,36 @@
 		<meta name="author" content="Ronoto">
 		<meta name="description" content="e-warehouse home page">
 		
-		<link rel="shortcut icon" href="client/components/favicon.ico" type="image/x-icon">
-		<link rel="stylesheet" href="client/css/style.css">
+		<link rel="shortcut icon" href="../client/components/favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" href="../client/css/style.css">
 		
 		<title>Home | e-warehouse</title>
 	</head>
 
 	<body>
+		<div class="background-image"></div>
+
 		<h1 class="home">E-WAREHOUSE</h1>
 		<h2 class="home"> PT CHAROEN POKPHAND INDONESIA, SEMARANG</h2>
 		<div id="nav">
 			<ul class="home">
-				<li><a href="http://e-warehouse/receiving/form">PACKAGING</a></li>
-				<li><a href="http://e-warehouse/putaway/map">PUTAWAY</a></li>
 				<li><a href="http://e-warehouse/warehouse">STORAGE</a></li>
-				<li><a href="http://e-warehouse/picking/form">ORDER</a></li>
-				<li><a href="http://e-warehouse/picking/list"><li>PICKING LIST</a></li>
-				<li><a href="http://e-warehouse/picking/map"><li>PICKING MAP</a></li>
+				<li class="dropdown">
+					<a href="javascript:void(0)" class="dropbtn">INPUT</a>
+					<div class="dropdown-content">
+						<a href="http://e-warehouse/receiving/form">PRODUCTION DATA</a>
+						<a href="http://e-warehouse/picking/form">ORDER DATA</a>
+					</div>
+				</li>
+				<li><a href="http://e-warehouse/putaway/map">PUTAWAY</a></li>
+				<li class="dropdown">
+					<a href="javascript:void(0)" class="dropbtn">PICKING</a>
+					<div class="dropdown-content">
+						<a href="http://e-warehouse/picking/list">LIST</a>
+						<a href="http://e-warehouse/picking/map">MAP</a>
+					</div>
+				</li>
+				<li><a href="#home">LOADING</a></li>
 			</ul>
 		</div>
 	</body>

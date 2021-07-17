@@ -15,7 +15,7 @@ $router->group(['prefix' => 'receiving'], function() use ($router) {
 
     // Router http://e-warehouse/receiving/form
     $router->get('form', function() use ($router) {
-        include 'client/ReceivingForm.html';
+        include 'client/Packaging.html';
     });
 });
 
@@ -44,7 +44,7 @@ $router->group(['prefix' => 'picking'], function() use ($router) {
 
     // Router http://e-warehouse/picking/form
     $router->get('form', function() use ($router) {
-        include 'client/PickingForm.html';
+        include 'client/Order.html';
     });
 
     // Router http://e-warehouse/picking/select
@@ -67,4 +67,7 @@ $router->group(['prefix' => 'picking'], function() use ($router) {
 
     // Router http://e-warehouse/picking/map
     $router->get('map', 'PickingController@PickingMap');
+
+    // Router http://e-warehouse/picking/counter
+    $router->get('counter', 'PickingController@PickingCounter');
 });

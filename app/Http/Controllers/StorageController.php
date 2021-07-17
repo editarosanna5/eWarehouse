@@ -31,10 +31,10 @@ class StorageController extends Controller {
                 echo '<meta name="description" content="e-warehouse warehouse map">';
                 echo '<title>Storage | e-Warehouse</title>';
                 echo '<meta http-equiv="refresh" content="5">';
-                echo '<link rel="shortcut icon" href="../client/components/favicon.ico" type="image/x-icon">';
-                echo '<link rel="stylesheet" href="../client/css/Loading.css">';
-                echo '<script src="../client/components/anychart-installation-package-8.10.0/js/anychart-core.min.js"></script>';
-                echo '<script src="../client/components/anychart-installation-package-8.10.0/js/anychart-heatmap.min.js"></script>';
+                echo '<link rel="shortcut icon" href="http://e-warehouse/client/components/favicon.ico" type="image/x-icon">';
+                echo '<link rel="stylesheet" href="http://e-warehouse/client/css/style.css">';
+                echo '<script src="http://e-warehouse/client/components/anychart-installation-package-8.10.0/js/anychart-core.min.js"></script>';
+                echo '<script src="http://e-warehouse/client/components/anychart-installation-package-8.10.0/js/anychart-heatmap.min.js"></script>';
                 echo '<style>';
                     echo '#group1, #group2, #group3 {';
                         echo 'height: 78%;';
@@ -65,13 +65,13 @@ class StorageController extends Controller {
             echo '</head>';
             echo '<body>';
                 echo '<div id="nav">';
-                    echo '<ul>';
+                    echo '<ul class="content">';
                         echo '<li><a href="http://e-warehouse">HOME</a></li>';
                         echo '<li><a href="http://e-warehouse/warehouse" onclick="return false;">STORAGE</a></li>';
                     echo '</ul>';
                 echo '</div>';
                     
-                    echo '<h1>STORAGE</h1>';
+                    echo '<h1 class="content">STORAGE</h1>';
                     
                 echo '<div class="map">';
                     echo '<div id="group1"></div>';
