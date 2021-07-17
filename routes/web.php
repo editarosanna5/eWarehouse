@@ -69,5 +69,15 @@ $router->group(['prefix' => 'picking'], function() use ($router) {
     $router->get('map', 'PickingController@PickingMap');
 
     // Router http://e-warehouse/picking/counter
-    $router->get('counter', 'PickingController@PickingCounter');
+    $router->get('counter', 'PickingController@LoadingCounter');
+
+    // Router http://e-warehouse/picking/linecheck/true
+    $router->get('linecheck/true', function() use ($router) {
+        include 'client/AvailableForPickup.html';
+    });
+
+    // Router http://e-warehouse/picking/linecheck/false
+    $router->get('linecheck/false', function() use ($router) {
+        include 'client/UnavailableForPickup.html';
+    });
 });

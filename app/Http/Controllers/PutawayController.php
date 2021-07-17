@@ -22,7 +22,7 @@ class PutawayController extends Controller {
         "));
 
         $type_id = $pallet_data[0]->type_id;
-        $production_date = $pallet_data[0]->production_date;
+        $production_date = '"' . $pallet_data[0]->production_date . '"';
         
         $options = DB::select(DB::raw(
             "SELECT
@@ -35,7 +35,6 @@ class PutawayController extends Controller {
                 AND Pallets.production_date = $production_date
                 AND Pallets.type_id = $type_id
                 -- pallet pertama pada line penyimpanan dianggap sebagai identity
-                AND Pallets.row_number = 1
                 AND Pallets.column_number = 1
                 AND Pallets.stack_number = 1
             ORDER BY
@@ -98,7 +97,6 @@ class PutawayController extends Controller {
                         Rows.pallet_count < $pallets_per_row
                         AND Pallets.production_date = $production_date
                         -- pallet pertama pada line penyimpanan dianggap sebagai identity
-                        AND Pallets.row_number = 1
                         AND Pallets.column_number = 1
                         AND Pallets.stack_number = 1
                     ORDER BY
@@ -271,9 +269,12 @@ class PutawayController extends Controller {
                     
                     // data pallet baru
                     $status_id = 4; // update status palet menjadi ON_STORAGE (4)
-                    $column_number = $pallet_count / WarehouseConfig::$StacksPerColumn + 1;
+                    $column_number = intdiv($pallet_count, WarehouseConfig::$StacksPerColumn) + 1;                  
                     $stack_number = $pallet_count % WarehouseConfig::$StacksPerColumn;
-                    if ($stack_number == 0) $stack_number += 3;
+                    
+                    if ($stack_number == 0) {
+                        $column_number -= 1;
+                    }
 
                     DB::update(DB::raw(
                         "UPDATE `Rows`
@@ -368,7 +369,7 @@ class PutawayController extends Controller {
 
                 foreach ($queries as $query) {
                     $i = $query->row_id;
-                    $j = ceil($query->pallet_count);
+                    $j = ceil($query->pallet_count / 3);
                     if ($j % 3 == 0) {
                         $j++;
                     }

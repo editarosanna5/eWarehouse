@@ -209,5 +209,5 @@ SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertPallet.sql;
 SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/ResetDatabase.sql;
 SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/setup.sql;
 
-SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/DemoInit.sql;
-CALL DemoInit();
+-- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/DemoInit.sql;
+-- CALL DemoInit();

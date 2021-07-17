@@ -18,7 +18,7 @@ h1 {
 h1.home {
   font-size: 650%;
   text-align: center;
-  margin-top: 16%
+  margin-top: 16%;
 }
 
 h1.content {
@@ -34,6 +34,8 @@ h2 {
 h2.home {
   text-align: center;
   line-height: 0.5em;
+  margin-bottom: 5%;
+  margin-top: -3%;
 }
 
 h2.content {
@@ -78,7 +80,7 @@ li.dropdown {
   padding: 12px 16px;
   text-decoration: none;
   display: block;
-  text-align: left;
+  text-align: center;
 }
 
 .dropdown:hover .dropdown-content {
@@ -92,10 +94,15 @@ li.dropdown {
   
 #nav ul.home {
   text-align: center;
-   list-style-type: none;
+  list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+#nav .home li {
+  min-width: 160px;
+  
 }
 
 #nav ul li {
@@ -111,11 +118,7 @@ li.dropdown {
   margin: 0 px
 }
 
-#nav ul li a,
-#nav ul li a:after,
-#nav ul li a:before {
-  transition: all .5s
-}
+
 
 #nav ul li a:hover {
   color: #000000
@@ -175,7 +178,6 @@ input {
   box-sizing:border-box;
   background:none;
   resize:none;
-  transition:all .3s;
   border:1px solid #bebed2;
   float:right
 }
@@ -200,7 +202,6 @@ button {
   background:0;
   color:#5a5a6e;
   cursor:pointer;
-  transition:all .3s
 }
 
 button:hover {
@@ -244,6 +245,18 @@ button:hover {
   border: 1px solid #696969;
   height: 108px;
   width: 350px;
+}
+
+.counter {
+  height: 300px;
+  width: 820px;
+  font-size: 200%;
+  margin: 8% 15%;
+  border: 1px solid #696969;
+}
+
+p.margin {
+  padding: 10%;
 }
 
 /* The Modal (background) */

@@ -169,9 +169,13 @@ class PickingController extends Controller {
                 "));
             }
         }
-
-        echo "Order successfully recorded.";
-        return ComponentCheck::CurrentTime();
+        echo '<html>';
+        echo '<head>';
+            echo '<meta http-equiv="Refresh" content="5; url=http://e-warehouse/picking/form">';
+        echo '</head>';
+        echo '<script>';
+            echo 'alert("Order successfully recorded.");';
+        echo '</script>';
     }
 
     // memilih order yang akan dieksekusi
@@ -243,12 +247,24 @@ class PickingController extends Controller {
                 $count = $temp[0]->found;
 
                 if ($count > 0) {
-                    echo "Row available for pickup. {$count} matches found.";
-                    return ComponentCheck::CurrentTime();
+                    echo ComponentCheck::CurrentTime();
+                    // echo '<script>';
+                    //     echo 'function myFunction() {';
+                    //         echo 'alert("Row available for pickup. ' . $count . ' matches found.");';
+                    //     echo '}';
+                    // echo '</script>';
+                    header("Location: http://e-warehouse/picking/map?check=true");
+                    die();
                 } else {
-                    echo "Row unavailable for pickup.";
-                    return ComponentCheck::CurrentTime();
+                    echo ComponentCheck::CurrentTime();
+                    // echo '<script>';
+                    //     echo 'function myFunction() {';
+                    //         echo 'alert("Row unavailable for pickup.");';
+                    //     echo '}';
+                    // echo '</script>';
                 }
+                    header("Location: http://e-warehouse/picking/map?check=false");
+                    die();
             }
         } else {
             echo "Unauthorized device.";
@@ -604,7 +620,7 @@ class PickingController extends Controller {
         echo '</html>';
     }
 
-    public function PickingMap () {
+    public function PickingMap (Request $request) {
         echo '<html>';
             echo '<head>';
                 echo '<meta charset="utf-8">';
@@ -647,15 +663,21 @@ class PickingController extends Controller {
                 $queries = DB::select(DB::raw(
                     "SELECT
                         Pallets.row_number AS row_number,
-                        Pallets.column_number AS column_number
-                    FROM Pallets JOIN PickupOptions
-                        ON Pallets.id = PickupOptions.pallet_id
+                        Pallets.column_number AS column_number,
+                        Rows.pallet_count AS pallet_count
+                    FROM
+                        PickupOptions JOIN Pallets
+                            ON Pallets.id = PickupOptions.pallet_id
+                        JOIN `Rows`
+                            ON Rows.id = Pallets.row_number
                 "));
 
                 foreach ($queries as $query) {
                     $i = $query->row_number;
-                    $j = $query->column_number;
-
+                    $j = ceil($query->pallet_count / 3);
+                    if ($j % 3 == 0) {
+                        $j++;
+                    }
                     $map[$i][$j] = 1;
                 }
 
@@ -723,7 +745,69 @@ class PickingController extends Controller {
                         echo 'map3.draw();';
                     echo '});';
                 echo '</script>';
+
+                $check = $request->get('check');
+        
+                if ($check == "true") {
+                    echo '<script>';
+                        echo 'alert("Row available for pickup.");';
+                    echo '</script>';
+                } elseif ($check == "false") {
+                    echo '<script>';
+                        echo 'alert("Row unavailable for pickup.");';
+                    echo '</script>';
+                }
+
             echo '</body>';
         echo '</html>';
+    }
+
+    public function LoadingCounter () {
+        
+            
+            $query = DB::select(
+                "SELECT
+                    OrderDetails.order_id AS do_number,
+                    OrderDetails.type_id AS type_id,
+                    OrderDetails.quantity AS required_bag_count,
+                    LoadingStatus.loaded_bag_count AS loaded_bag_count
+                FROM OrderDetails JOIN LoadingStatus
+                    ON OrderDetails.id = LoadingStatus.id
+            ");
+
+            $do_number = $query[0]->do_number;
+            $type_id = $query[0]->type_id;
+            $required_bag_count = $query[0]->required_bag_count;
+            $loaded_bag_count = $query[0]->loaded_bag_count;
+
+            echo '<html>';
+            echo '<head>';
+            echo '<meta charset="utf-8">';
+            echo '<meta name="author" content="Ronoto">';
+            echo '<meta name="description" content="e-warehouse warehouse map">';
+            echo '<title>Loading | e-Warehouse</title>';
+            echo '<meta http-equiv="refresh" content="3">';
+            echo '<link rel="shortcut icon" href="http://e-warehouse/client/components/favicon.ico" type="image/x-icon">';
+            echo '<link rel="stylesheet" href="http://e-warehouse/client/css/style.css">';
+            echo '<script src="http://e-warehouse/client/components/anychart-installation-package-8.10.0/js/anychart-core.min.js"></script>';
+            echo '<script src="http://e-warehouse/client/components/anychart-installation-package-8.10.0/js/anychart-heatmap.min.js"></script>';
+        echo '</head>';
+        echo '<body>';
+            echo '<div id="nav">';
+                echo '<ul class="content">';
+                    echo '<li><a href="http://e-warehouse">HOME</a></li>';
+                    echo '<li><a href="http://e-warehouse/warehouse">STORAGE</a></li>';
+                echo '</ul>';
+            echo '</div>';
+            
+            echo '<h1 class="content">LOADING</h1>';
+echo '<div class="counter">';
+echo '<p>&ensp;DO Number :&ensp;' . $do_number . '</p>';
+echo '<p><br>&ensp;Type ID &emsp;&ensp;&nbsp;:&ensp;' . $type_id .'</p>';
+echo '<p><br>&ensp;Loaded  &emsp;&ensp;&nbsp;:&ensp;' . $loaded_bag_count . '&nbsp;/&nbsp;' . $required_bag_count . '</p>';
+echo '</div>';
+            echo '</body>';
+        echo '</html>';
+
     }
 }

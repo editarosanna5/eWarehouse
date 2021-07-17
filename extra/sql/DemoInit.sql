@@ -60,7 +60,7 @@ BEGIN
                 END IF;
 
                 SET n = n+1;
-                UPDATE `Pallets` SET po_number=2000+n, type_id=2, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-12" WHERE id=n;
+                UPDATE `Pallets` SET po_number=2000+n, type_id=2, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-17" WHERE id=n;
                 SET k = k+1;
             END LOOP;
 
@@ -91,7 +91,7 @@ BEGIN
                 END IF;
 
                 SET n = n+1;
-                UPDATE `Pallets` SET po_number=2000+n, type_id=2, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-10" WHERE id=n;
+                UPDATE `Pallets` SET po_number=2000+n, type_id=2, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-15" WHERE id=n;
                 SET k = k+1;
             END LOOP;
 
@@ -122,7 +122,7 @@ BEGIN
                 END IF;
 
                 SET n = n+1;
-                UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-10" WHERE id=n;
+                UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-15" WHERE id=n;
                 SET k = k+1;
             END LOOP;
 
@@ -133,9 +133,9 @@ BEGIN
     END LOOP;
 
     SET n = n+1;
-    UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=5, column_number=5, stack_number=1, production_date="2021-07-10" WHERE id=n;
+    UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=5, column_number=5, stack_number=1, production_date="2021-07-15" WHERE id=n;
     SET n = n+1;
-    UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=5, column_number=5, stack_number=2, production_date="2021-07-10" WHERE id=n;
+    UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=5, column_number=5, stack_number=2, production_date="2021-07-15" WHERE id=n;
 
     UPDATE `Rows` SET pallet_count=14 WHERE id=5;
 
@@ -158,7 +158,7 @@ BEGIN
                 END IF;
 
                 SET n = n+1;
-                UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-12" WHERE id=n;
+                UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-17" WHERE id=n;
                 SET k = k+1;
             END LOOP;
 
@@ -169,7 +169,7 @@ BEGIN
     END LOOP;
 
     SET n = n+1;
-    UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=6, column_number=3, stack_number=1, production_date="2021-07-12" WHERE id=n;
+    UPDATE `Pallets` SET po_number=3000+n, type_id=3, status_id=4, bag_count=49, row_number=6, column_number=3, stack_number=1, production_date="2021-07-17" WHERE id=n;
 
     UPDATE `Rows` SET pallet_count=7 WHERE id=6;
 
@@ -192,7 +192,7 @@ BEGIN
                 END IF;
 
                 SET n = n+1;
-                UPDATE `Pallets` SET po_number=4000+n, type_id=4, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-10" WHERE id=n;
+                UPDATE `Pallets` SET po_number=4000+n, type_id=4, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-15" WHERE id=n;
                 SET k = k+1;
             END LOOP;
 
@@ -224,7 +224,7 @@ BEGIN
                 END IF;
 
                 SET n = n+1;
-                UPDATE `Pallets` SET po_number=4000+n, type_id=4, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-12" WHERE id=n;
+                UPDATE `Pallets` SET po_number=4000+n, type_id=4, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-17" WHERE id=n;
                 SET k = k+1;
             END LOOP;
 
@@ -253,7 +253,7 @@ BEGIN
                 END IF;
 
                 SET n = n+1;
-                UPDATE `Pallets` SET po_number=4000+n, type_id=4, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-12" WHERE id=n;
+                UPDATE `Pallets` SET po_number=4000+n, type_id=4, status_id=4, bag_count=49, row_number=i, column_number=j, stack_number=k, production_date="2021-07-17" WHERE id=n;
                 SET k = k+1;
             END LOOP;
 
