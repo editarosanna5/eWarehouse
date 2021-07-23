@@ -774,12 +774,17 @@ class PickingController extends Controller {
                 FROM OrderDetails JOIN LoadingStatus
                     ON OrderDetails.id = LoadingStatus.id
             ");
-
-            $do_number = $query[0]->do_number;
-            $type_id = $query[0]->type_id;
-            $required_bag_count = $query[0]->required_bag_count;
-            $loaded_bag_count = $query[0]->loaded_bag_count;
-
+            if ($query==null){
+              $do_number = "No Order Found";
+              $type_id = "-";
+              $required_bag_count = "-";
+              $loaded_bag_count = "-";
+            } else {
+              $do_number = $query[0]->do_number;
+              $type_id = $query[0]->type_id;
+              $required_bag_count = $query[0]->required_bag_count;
+              $loaded_bag_count = $query[0]->loaded_bag_count;
+            }
             echo '<html>';
             echo '<head>';
             echo '<meta charset="utf-8">';
