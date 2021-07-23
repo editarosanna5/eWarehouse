@@ -120,17 +120,28 @@ class PickingController extends Controller {
         $type_id = ComponentCheck::MultipleInputsToArray($type_id, true);
         $bag_count = ComponentCheck::MultipleInputsToArray($bag_count, true);
 
-        DB::insert(DB::raw(
-            "INSERT INTO OrderData (
-                member_id,
-                do_number,
-                order_date
-            ) VALUES (
-                $loading_line,
-                $do_number,
-                $current_date
-            )
+        $delivery_id = DB::select(DB::raw(
+            "SELECT do_number
+            FROM OrderData
+            WHERE
+                do_number = $do_number
         "));
+
+        $is_duplicate_data = $delivery_id == NULL ? false : $delivery_id[0]->do_number == $do_number;
+        
+        if(!$is_duplicate_data){
+            DB::insert(DB::raw(
+                "INSERT INTO OrderData (
+                    member_id,
+                    do_number,
+                    order_date
+                ) VALUES (
+                    $loading_line,
+                    $do_number,
+                    $current_date
+                )
+            "));
+        } 
 
         $delivery_id = DB::select(DB::raw(
             "SELECT id
@@ -145,36 +156,43 @@ class PickingController extends Controller {
             $type = $type_id[$i];
             $quantity = $bag_count[$i];
             $pallet_options = PickingController::PickupOptionsFetch($type);
-            DB::insert(DB::raw(
-                "INSERT INTO OrderDetails (
-                    order_id,
-                    type_id,
-                    quantity
-                ) VALUES (
-                    $order_id,
-                    $type,
-                    $quantity
-                )
-            "));
-
-            foreach($pallet_options as $pallet_option) {
+            if (!$is_duplicate_data){
                 DB::insert(DB::raw(
-                    "INSERT INTO PickupOptions(
-                        id,
-                        pallet_id
+                    "INSERT INTO OrderDetails (
+                        order_id,
+                        type_id,
+                        quantity
                     ) VALUES (
                         $order_id,
-                        $pallet_option
+                        $type,
+                        $quantity
                     )
                 "));
+            }
+            foreach($pallet_options as $pallet_option) {
+                if (!$is_duplicate_data){
+                    DB::insert(DB::raw(
+                        "INSERT INTO PickupOptions(
+                            id,
+                            pallet_id
+                        ) VALUES (
+                            $order_id,
+                            $pallet_option
+                        )
+                    "));
+                } 
             }
         }
         echo '<html>';
         echo '<head>';
-            echo '<meta http-equiv="Refresh" content="5; url=http://e-warehouse/picking/form">';
+            echo '<meta http-equiv="Refresh" content="1; url=http://e-warehouse/picking/form">';
         echo '</head>';
         echo '<script>';
-            echo 'alert("Order successfully recorded.");';
+            if ($is_duplicate_data){
+                echo 'alert("Order already recorded.");';    
+            } else {
+                echo 'alert("Order successfully recorded.");';
+            }
         echo '</script>';
     }
 
@@ -775,10 +793,10 @@ class PickingController extends Controller {
                     ON OrderDetails.id = LoadingStatus.id
             ");
             if ($query==null){
-              $do_number = "No Order Found";
-              $type_id = "-";
-              $required_bag_count = "-";
-              $loaded_bag_count = "-";
+              $do_number = "0";
+              $type_id = "0";
+              $required_bag_count = "0";
+              $loaded_bag_count = "0";
             } else {
               $do_number = $query[0]->do_number;
               $type_id = $query[0]->type_id;
