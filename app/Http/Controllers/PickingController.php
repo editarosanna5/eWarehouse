@@ -492,7 +492,8 @@ class PickingController extends Controller {
                 "SELECT
                     Pallets.id AS pallet_id,
                     OrderDetails.id AS order_detail_id,
-                    OrderDetails.quantity AS required_bag_count
+                    OrderDetails.quantity AS required_bag_count,
+                    OrderDetails.order_id AS order_id
                 FROM Pallets
                     JOIN OrderDetails
                         ON Pallets.type_id = OrderDetails.type_id
@@ -511,7 +512,8 @@ class PickingController extends Controller {
                 $pallet_id = $temp[0]->pallet_id;
                 $order_detail_id = $temp[0]->order_detail_id;
                 $required_bag_count = $temp[0]->required_bag_count;
-
+                $order_id = $temp[0]->order_id;
+                
                 // update status loading
                 DB::update(DB::raw(
                     "UPDATE LoadingStatus
@@ -538,7 +540,7 @@ class PickingController extends Controller {
                 "));
 
                 $pallet_bag_count = $temp[0]->bag_count;
-
+                $status_msg = "successfully";
                 if ($pallet_bag_count == 1) {   // sisa karung = 1
                     // update data pallet
                         // bag_count =- 1 (= 0)
@@ -565,6 +567,14 @@ class PickingController extends Controller {
                             WHERE
                                 id = $pallet_id
                         "));
+                        DB::update(DB::raw(
+                            "UPDATE OrderData
+                            SET
+                                status_id = 3,
+                            WHERE
+                                id = $order_id
+                        "));
+                        $status_msg = "fully";
                     } else {
                         DB::update(DB::raw(
                             "UPDATE Pallets
@@ -575,7 +585,7 @@ class PickingController extends Controller {
                         "));
                     }
                 }
-                echo "Bag successfully loaded.";
+                echo "Bag " . $status_msg . " loaded.";
                 return ComponentCheck::CurrentTime();
             }
         } else {
@@ -780,30 +790,30 @@ class PickingController extends Controller {
         echo '</html>';
     }
 
-    public function LoadingCounter () {
-        
-            
+    // masih hanya berlaku untuk 1 client, multiple client ga bisa
+    public function LoadingCounter () {           
             $query = DB::select(
                 "SELECT
                     -- OrderDetails.order_id AS do_number,
                     OrderDetails.type_id AS type_id,
                     OrderDetails.quantity AS required_bag_count,
                     LoadingStatus.loaded_bag_count AS loaded_bag_count,
-                    OrderData.do_number AS do_number
+                    OrderData.do_number AS do_number,
+                    OrderData.status_id AS status_id
                 FROM OrderDetails 
                     JOIN LoadingStatus ON OrderDetails.id = LoadingStatus.id 
                     JOIN OrderData ON OrderDetails.id = OrderData.id
             ");
             if ($query==null){
-              $do_number = "No Order Found";
-              $type_id = "0";
-              $required_bag_count = "0";
-              $loaded_bag_count = "0";
+                $do_number = "No Order Found";
+                $type_id = "0";
+                $required_bag_count = "0";
+                $loaded_bag_count = "0";
             } else {
-              $do_number = $query[0]->do_number;
-              $type_id = $query[0]->type_id;
-              $required_bag_count = $query[0]->required_bag_count;
-              $loaded_bag_count = $query[0]->loaded_bag_count;
+                $do_number = $query[0]->do_number;
+                $type_id = $query[0]->type_id;
+                $required_bag_count = $query[0]->required_bag_count;
+                $loaded_bag_count = $query[0]->loaded_bag_count;    
             }
             echo '<html>';
             echo '<head>';
@@ -829,7 +839,13 @@ class PickingController extends Controller {
 echo '<div class="counter">';
 echo '<p>&ensp;DO Number :&ensp;' . $do_number . '</p>';
 echo '<p><br>&ensp;Type ID &emsp;&ensp;&nbsp;:&ensp;' . $type_id .'</p>';
-echo '<p><br>&ensp;Loaded  &emsp;&ensp;&nbsp;:&ensp;' . $loaded_bag_count . '&nbsp;/&nbsp;' . $required_bag_count . '</p>';
+echo '<p><br>&ensp;Loaded  &emsp;&ensp;&nbsp;:&ensp;' . $loaded_bag_count . '&nbsp;/&nbsp;' . $required_bag_count 
+. '</p>';
+if ($query[0]->status_id==3){
+    echo "<p><br>&ensp;Order Completed";
+} else {
+    echo "<p><br>&ensp;Order ONGOING";
+}
 echo '</div>';
             echo '</body>';
         echo '</html>';
