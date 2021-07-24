@@ -785,15 +785,17 @@ class PickingController extends Controller {
             
             $query = DB::select(
                 "SELECT
-                    OrderDetails.order_id AS do_number,
+                    -- OrderDetails.order_id AS do_number,
                     OrderDetails.type_id AS type_id,
                     OrderDetails.quantity AS required_bag_count,
-                    LoadingStatus.loaded_bag_count AS loaded_bag_count
-                FROM OrderDetails JOIN LoadingStatus
-                    ON OrderDetails.id = LoadingStatus.id
+                    LoadingStatus.loaded_bag_count AS loaded_bag_count,
+                    OrderData.do_number AS do_number
+                FROM OrderDetails 
+                    JOIN LoadingStatus ON OrderDetails.id = LoadingStatus.id 
+                    JOIN OrderData ON OrderDetails.id = OrderData.id
             ");
             if ($query==null){
-              $do_number = "0";
+              $do_number = "No Order Found";
               $type_id = "0";
               $required_bag_count = "0";
               $loaded_bag_count = "0";
