@@ -570,7 +570,7 @@ class PickingController extends Controller {
                         DB::update(DB::raw(
                             "UPDATE OrderData
                             SET
-                                status_id = 3,
+                                status_id = 3
                             WHERE
                                 id = $order_id
                         "));
@@ -841,10 +841,12 @@ echo '<p>&ensp;DO Number :&ensp;' . $do_number . '</p>';
 echo '<p><br>&ensp;Type ID &emsp;&ensp;&nbsp;:&ensp;' . $type_id .'</p>';
 echo '<p><br>&ensp;Loaded  &emsp;&ensp;&nbsp;:&ensp;' . $loaded_bag_count . '&nbsp;/&nbsp;' . $required_bag_count 
 . '</p>';
-if ($query[0]->status_id==3){
-    echo "<p><br>&ensp;Order Completed";
-} else {
-    echo "<p><br>&ensp;Order ONGOING";
+if ($query != NULL){
+    if ($query[0]->status_id==3){
+        echo "<p><br>&ensp;Order Completed</p>";
+    } else {
+        echo "<p><br>&ensp;Order ONGOING</p>";
+    }
 }
 echo '</div>';
             echo '</body>';
