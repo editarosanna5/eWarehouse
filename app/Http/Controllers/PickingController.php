@@ -810,10 +810,22 @@ class PickingController extends Controller {
                 $required_bag_count = "0";
                 $loaded_bag_count = "0";
             } else {
-                $do_number = $query[0]->do_number;
-                $type_id = $query[0]->type_id;
-                $required_bag_count = $query[0]->required_bag_count;
-                $loaded_bag_count = $query[0]->loaded_bag_count;    
+                for ($count = 0; $count < sizeof($query)-1; $count++){
+                    if ($query[$count]->status_id==2){
+                        break;
+                    }
+                }
+                if ($count == sizeof($query)-1){
+                    $do_number = "No Order Found";
+                    $type_id = "0";
+                    $required_bag_count = "0";
+                    $loaded_bag_count = "0";
+                } else {
+                    $do_number = $query[$count]->do_number;
+                    $type_id = $query[$count]->type_id;
+                    $required_bag_count = $query[$count]->required_bag_count;
+                    $loaded_bag_count = $query[$count]->loaded_bag_count;
+                }   
             }
             echo '<html>';
             echo '<head>';
@@ -842,7 +854,7 @@ echo '<p><br>&ensp;Type ID &emsp;&ensp;&nbsp;:&ensp;' . $type_id .'</p>';
 echo '<p><br>&ensp;Loaded  &emsp;&ensp;&nbsp;:&ensp;' . $loaded_bag_count . '&nbsp;/&nbsp;' . $required_bag_count 
 . '</p>';
 if ($query != NULL){
-    if ($query[0]->status_id==3){
+    if ($query[$count]->status_id==3){
         echo "<p><br>&ensp;Order Completed</p>";
     } else {
         echo "<p><br>&ensp;Order ONGOING</p>";
