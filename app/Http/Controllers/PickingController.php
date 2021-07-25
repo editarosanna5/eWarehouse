@@ -810,12 +810,14 @@ class PickingController extends Controller {
                 $required_bag_count = "0";
                 $loaded_bag_count = "0";
             } else {
+                $is_status_2_exists = false;
                 for ($count = 0; $count < sizeof($query)-1; $count++){
                     if ($query[$count]->status_id==2){
+                        $is_status_2_exists = true;
                         break;
                     }
                 }
-                if ($count == sizeof($query)-1){
+                if ($count == sizeof($query)-1 && $is_status_2_exists == false){
                     $do_number = "No Order Found";
                     $type_id = "0";
                     $required_bag_count = "0";
