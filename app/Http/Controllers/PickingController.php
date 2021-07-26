@@ -857,9 +857,11 @@ echo '<p><br>&ensp;Loaded  &emsp;&ensp;&nbsp;:&ensp;' . $loaded_bag_count . '&nb
 . '</p>';
 if ($query != NULL){
     if ($query[$count]->status_id==3){
-        echo "<p><br>&ensp;Order Completed</p>";
-    } else {
+        echo "<p><br>&ensp;Order COMPLETED</p>";
+    } else if ($query[$count]->status_id==2){
         echo "<p><br>&ensp;Order ONGOING</p>";
+    } else {
+        echo "<p><br>&ensp;Order EMPTY</p>";
     }
 }
 echo '</div>';
