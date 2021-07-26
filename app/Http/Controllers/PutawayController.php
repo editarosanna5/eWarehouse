@@ -218,7 +218,7 @@ class PutawayController extends Controller {
                         WHERE
                             id = $pallet_id_int
                     "));
-                    
+                    echo "Pallet " .  $pallet_id_int . "available for putaway";
                     return ComponentCheck::CurrentTime();
                 } else {
                     echo "No available rows.<br>";
@@ -303,18 +303,18 @@ class PutawayController extends Controller {
                             OR row_id = $row_id_int
                     "));
 
-                    echo "Item has been stored.<br>";
+                    echo "Item has been stored on Row " . $row_id_int;
                     return ComponentCheck::CurrentTime();
                 } else {
-                    echo "Row not recommended.<br>";
+                    echo "Row not recommended.";
                     return ComponentCheck::CurrentTime();
                 }
             } else {
-                echo "Invalid row ID.<br>";
+                echo "Invalid row ID.";
                 return ComponentCheck::CurrentTime();
             }
         } else {
-            echo "Unauthorized device.<br>";
+            echo "Unauthorized device.";
             return ComponentCheck::CurrentTime();
         }
     }

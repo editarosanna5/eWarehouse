@@ -319,7 +319,6 @@ class PickingController extends Controller {
                 $count = $temp[0]->found;
 
                 if ($count > 0) {
-                    echo ComponentCheck::CurrentTime();
                     // echo '<script>';
                     //     echo 'function myFunction() {';
                     //         echo 'alert("Row available for pickup. ' . $count . ' matches found.");';
@@ -327,9 +326,9 @@ class PickingController extends Controller {
                     // echo '</script>';
                     // header("Location: http://e-warehouse/picking/map?check=true");
                     echo "Row " . $row_id_int . " available for pickup"; // bisa sebagai indikator di hardware juga
+                    echo ComponentCheck::CurrentTime();
                     die();
                 } else {
-                    echo ComponentCheck::CurrentTime();
                     // echo '<script>';
                     //     echo 'function myFunction() {';
                     //         echo 'alert("Row unavailable for pickup.");';
@@ -337,7 +336,8 @@ class PickingController extends Controller {
                     // echo '</script>';
                 }
                     // header("Location: http://e-warehouse/picking/map?check=false");
-                    echo "Row " . $row_id_int . " unavailable for pickup"; // bisa sebagai indikator di hardware juga
+                    echo " Row " . $row_id_int . " unavailable for pickup"; // bisa sebagai indikator di hardware juga
+                    echo ComponentCheck::CurrentTime();
                     die();
             }
         } else {
@@ -495,10 +495,10 @@ class PickingController extends Controller {
                         "));
                     }
 
-                    echo "Pallet successfully taken. Moving to loading zone.";
+                    echo "Pallet " . $pallet_id_int . " successfully taken. Moving to loading zone.";
                     return ComponentCheck::CurrentTime();
                 } else {
-                    echo "Pallet not in option.";
+                    echo "Pallet " . $pallet_id_int . "not in option.";
                     return ComponentCheck::CurrentTime();
                 }
             } else {
@@ -521,7 +521,7 @@ class PickingController extends Controller {
                 id = $pallet_id_int    
         "));
 
-        echo "Pallet arrived at loading zone. Waiting to be loaded.";
+        echo "Pallet " . $pallet_id_int . " arrived at loading zone. Waiting to be loaded.";
         return ComponentCheck::CurrentTime();
     }
     
@@ -573,7 +573,7 @@ class PickingController extends Controller {
             )
         "));
 
-        echo "Loading pallet {$pallet_id_int}.<br>";
+        echo "Loading pallet {$pallet_id_int}.";
         return ComponentCheck::CurrentTime();
     }
 
@@ -593,7 +593,7 @@ class PickingController extends Controller {
                 // status palet akhir = WAITING_TO_BE_LOADED (6)
                 
                 PickingController::PickingArrivalUpdate($pallet_id_int);
-
+                return ComponentCheck::CurrentTime();
             } else {
                 $pallet_id_int = ComponentCheck::PalletID($pallet_id, 6);
 
@@ -603,7 +603,7 @@ class PickingController extends Controller {
                     // status palet akhir = LOADING (7)
 
                     PickingController::PickingLoadingSelect ($pallet_id_int, $member_id);
-
+                    return ComponentCheck::CurrentTime();
                 } else {
                     echo "Pallet unavailable for this operation.";
                     return ComponentCheck::CurrentTime();
