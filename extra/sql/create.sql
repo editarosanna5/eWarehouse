@@ -209,8 +209,11 @@ SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertPallet.sql;
 SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/ResetDatabase.sql;
 SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/setup.sql;
 
--- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/DemoInit.sql;
--- CALL DemoInit();
+SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/DemoInit.sql;
+CALL DemoInit();
 
 -- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/FullStorage.sql;
 -- CALL FullStorage();
+
+UPDATE PALLETS SET po_number=1009, type_id=1, status_id=8, bag_count=15, production_date="2021-07-13" where id=9;
+UPDATE PALLETS SET po_number=1010, type_id=2, status_id=8, bag_count=15, production_date="2021-07-13" where id=10;
