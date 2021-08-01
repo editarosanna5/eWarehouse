@@ -681,7 +681,7 @@ class PickingController extends Controller {
                     DB::update(DB::raw(
                         "UPDATE Pallets
                         SET
-                            po_number = -1,
+                            po_number = 0,
                             type_id = NULL,
                             status_id = 1,
                             bag_count = bag_count - 1,
@@ -689,6 +689,14 @@ class PickingController extends Controller {
                         WHERE
                             id = $pallet_id
                     "));
+                    DB::update(DB::raw(
+                        "UPDATE OrderData
+                        SET
+                            status_id = 3
+                        WHERE
+                            id = $order_id
+                    "));
+                    $status_msg = "fully";
                 } else {    // sisa karung > 1
                     // loaded_bag_count terpenuhi
                     if ($loaded_bag_count >= $required_bag_count) {
