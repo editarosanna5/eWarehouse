@@ -131,7 +131,7 @@ class PickingController extends Controller {
         // menjadi array
         $type_id = ComponentCheck::MultipleInputsToArray($type_id, true);
         $bag_count = ComponentCheck::MultipleInputsToArray($bag_count, true);
-
+        $number_of_type = count($type_id);
         
         $delivery_id = DB::select(DB::raw(
             "SELECT do_number
@@ -148,11 +148,13 @@ class PickingController extends Controller {
                 "INSERT INTO OrderData (
                     member_id,
                     do_number,
-                    order_date
+                    order_date,
+                    number_of_type
                 ) VALUES (
                     $loading_line,
                     $do_number,
-                    $current_date
+                    $current_date,
+                    $number_of_type
                 )
             "));
         } 
@@ -652,6 +654,8 @@ class PickingController extends Controller {
                     "UPDATE LoadingStatus
                     SET
                         loaded_bag_count = loaded_bag_count + 1
+                    WHERE
+                        id = $order_detail_id
                 "));
 
                 // periksa jumlah loaded_bag_count
@@ -674,6 +678,12 @@ class PickingController extends Controller {
 
                 $pallet_bag_count = $temp[0]->bag_count;
                 $status_msg = "successfully";
+                $temp = DB::select(DB::raw(
+                    "SELECT number_of_type
+                    FROM OrderData
+                    WHERE
+                      id = $order_id
+                ")); 
                 if ($pallet_bag_count == 1) {   // sisa karung = 1
                     // update data pallet
                         // bag_count =- 1 (= 0)
@@ -688,14 +698,24 @@ class PickingController extends Controller {
                             production_date = NULL
                         WHERE
                             id = $pallet_id
-                    "));
-                    DB::update(DB::raw(
-                        "UPDATE OrderData
-                        SET
-                            status_id = 3
-                        WHERE
-                            id = $order_id
-                    "));
+                    "));   
+                    if ($temp[0]->number_of_type > 1) {
+                        DB::update(DB::raw(
+                            "UPDATE OrderData
+                            SET
+                                number_of_type = number_of_type - 1
+                            WHERE
+                                id = $order_id
+                        "));
+                    } else {
+                        DB::update(DB::raw(
+                            "UPDATE OrderData
+                            SET
+                                status_id = 3
+                            WHERE
+                                id = $order_id
+                        "));
+                    }
                     $status_msg = "fully";
                 } else {    // sisa karung > 1
                     // loaded_bag_count terpenuhi
@@ -708,13 +728,23 @@ class PickingController extends Controller {
                             WHERE
                                 id = $pallet_id
                         "));
-                        DB::update(DB::raw(
-                            "UPDATE OrderData
-                            SET
-                                status_id = 3
-                            WHERE
-                                id = $order_id
-                        "));
+                        if ($temp[0]->number_of_type > 1) {
+                            DB::update(DB::raw(
+                                "UPDATE OrderData
+                                SET
+                                    number_of_type = number_of_type - 1
+                                WHERE
+                                    id = $order_id
+                            "));
+                        } else {
+                            DB::update(DB::raw(
+                                "UPDATE OrderData
+                                SET
+                                    status_id = 3
+                                WHERE
+                                    id = $order_id
+                            "));
+                        }
                         $status_msg = "fully";
                     } else {
                         DB::update(DB::raw(
@@ -811,7 +841,18 @@ class PickingController extends Controller {
                 echo '</div>';
                     
                     echo '<h1 class="content">PICKING MAP</h1>';
-                    
+                    $queries = DB::select(DB::raw(
+                        "SELECT
+                            Pallets.row_number AS row_number,
+                            Pallets.column_number AS column_number,
+                            Rows.pallet_count AS pallet_count
+                        FROM
+                            PickupOptions JOIN Pallets
+                                ON Pallets.id = PickupOptions.pallet_id
+                            JOIN `Rows`
+                                ON Rows.id = Pallets.row_number
+                    "));
+                    echo '<h4 style="text-align:right">Line Pick-up Order: '; foreach ($queries as $value) {echo $value->row_number . ", ";} echo '</h4>';
                 echo '<div class="map">';
                     echo '<div id="group1"></div>';
                     echo '<div id="group2"></div>';
@@ -829,17 +870,17 @@ class PickingController extends Controller {
                     $map[$i] = array_fill(1,7,0);
                 }
 
-                $queries = DB::select(DB::raw(
-                    "SELECT
-                        Pallets.row_number AS row_number,
-                        Pallets.column_number AS column_number,
-                        Rows.pallet_count AS pallet_count
-                    FROM
-                        PickupOptions JOIN Pallets
-                            ON Pallets.id = PickupOptions.pallet_id
-                        JOIN `Rows`
-                            ON Rows.id = Pallets.row_number
-                "));
+                // $queries = DB::select(DB::raw(
+                //     "SELECT
+                //         Pallets.row_number AS row_number,
+                //         Pallets.column_number AS column_number,
+                //         Rows.pallet_count AS pallet_count
+                //     FROM
+                //         PickupOptions JOIN Pallets
+                //             ON Pallets.id = PickupOptions.pallet_id
+                //         JOIN `Rows`
+                //             ON Rows.id = Pallets.row_number
+                // "));
 
                 foreach ($queries as $query) {
                     $i = $query->row_number;
@@ -944,7 +985,7 @@ class PickingController extends Controller {
                     OrderData.status_id AS status_id
                 FROM OrderDetails 
                     JOIN LoadingStatus ON OrderDetails.id = LoadingStatus.id 
-                    JOIN OrderData ON OrderDetails.id = OrderData.id
+                    JOIN OrderData ON OrderDetails.order_id = OrderData.id
             ");
             if ($query==null){
                 $do_number = "No Order Found";
@@ -953,13 +994,22 @@ class PickingController extends Controller {
                 $loaded_bag_count = "0";
             } else {
                 $is_status_2_exists = false;
-                for ($count = 0; $count < sizeof($query); $count++){
-                    if ($query[$count]->status_id==2){
+                foreach ($query as $value){
+                    if ($value->status_id == 2){
                         $is_status_2_exists = true;
                         break;
                     }
                 }
-                if ($count == sizeof($query) && $is_status_2_exists == false){
+                $count = 0;
+                if ($is_status_2_exists){
+                    foreach($query as $val){
+                        if ($val->required_bag_count == $val->loaded_bag_count){
+                            $count++;
+                        }
+                    }
+                }
+                if ($count == count($query)) {$count = 0;}
+                if ($is_status_2_exists == false){
                     $do_number = "No Order Found";
                     $type_id = "0";
                     $required_bag_count = "0";
@@ -998,7 +1048,7 @@ echo '<p><br>&ensp;Type ID &emsp;&ensp;&nbsp;:&ensp;' . $type_id .'</p>';
 echo '<p><br>&ensp;Loaded  &emsp;&ensp;&nbsp;:&ensp;' . $loaded_bag_count . '&nbsp;/&nbsp;' . $required_bag_count 
 . '</p>';
 if ($query != NULL){
-    if (!$is_status_2_exists && $count == sizeof($query)){
+    if (!$is_status_2_exists){
         echo "<p><br>&ensp;Order EMPTY</p>";
     } else if ($is_status_2_exists){
         echo "<p><br>&ensp;Order ONGOING</p>";
