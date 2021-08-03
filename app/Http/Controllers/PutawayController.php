@@ -341,7 +341,14 @@ class PutawayController extends Controller {
                 echo '</div>';
                     
                     echo '<h1 class="content">PUTAWAY</h1>';
-                    
+                    $queries = DB::select(DB::raw(
+                        "SELECT
+                            StorageOptions.row_id AS row_id,
+                            Rows.pallet_count AS pallet_count
+                        FROM StorageOptions JOIN `Rows`
+                            ON StorageOptions.row_id = Rows.id
+                    "));
+                    echo '<h4 style="text-align:right">Recommended Putaway Line: '; foreach ($queries as $value) {echo $value->row_id . ", ";} echo '</h4>';
                 echo '<div class="map">';
                     echo '<div id="group1"></div>';
                     echo '<div id="group2"></div>';
@@ -358,14 +365,6 @@ class PutawayController extends Controller {
                 for ($i = 1; $i <= 20; $i++) {
                     $map[$i] = array_fill(1,7,0);
                 }
-
-                $queries = DB::select(DB::raw(
-                    "SELECT
-                        StorageOptions.row_id AS row_id,
-                        Rows.pallet_count AS pallet_count
-                    FROM StorageOptions JOIN `Rows`
-                        ON StorageOptions.row_id = Rows.id
-                "));
 
                 foreach ($queries as $query) {
                     $i = $query->row_id;

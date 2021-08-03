@@ -96,6 +96,7 @@ CREATE TABLE `OrderData` (
     do_number INTEGER NOT NULL,
     order_date DATE NOT NULL,
     status_id INTEGER DEFAULT 1 NOT NULL,
+    number_of_type INTEGER DEFAULT 1 NOT NULL,
 
     INDEX USING BTREE(member_id),
     INDEX USING BTREE(do_number),
@@ -209,8 +210,8 @@ SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/InsertPallet.sql;
 SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/ResetDatabase.sql;
 SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/setup.sql;
 
-SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/DemoInit.sql;
-CALL DemoInit();
+-- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/DemoInit.sql;
+-- CALL DemoInit();
 
 -- SOURCE C:/xampp/htdocs/eWarehouse/extra/sql/FullStorage.sql;
 -- CALL FullStorage();
