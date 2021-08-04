@@ -987,6 +987,7 @@ class PickingController extends Controller {
                     JOIN LoadingStatus ON OrderDetails.id = LoadingStatus.id 
                     JOIN OrderData ON OrderDetails.order_id = OrderData.id
             ");
+
             if ($query==null){
                 $do_number = "No Order Found";
                 $type_id = "0";
@@ -1053,6 +1054,8 @@ if ($query != NULL){
     } else if ($is_status_2_exists){
         echo "<p><br>&ensp;Order ONGOING</p>";
     }
+} else {
+    echo "<p><br>&ensp;Order EMPTY</p>";
 }
 echo '</div>';
             echo '</body>';
